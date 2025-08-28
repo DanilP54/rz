@@ -1,0 +1,1 @@
+// type ThematicSegments = 'instincts' | 'intellect' | 'balance';

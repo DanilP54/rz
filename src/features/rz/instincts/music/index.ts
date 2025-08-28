@@ -1,0 +1,1 @@
+export {InstinctsMusicFiltersBar} from './FiltersBar';
