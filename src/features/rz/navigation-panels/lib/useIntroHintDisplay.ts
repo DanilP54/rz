@@ -11,11 +11,15 @@ export const useIntroHintDisplay = (
 
     const isBeenIndexRoute = useRef(false)
 
-    const hintStorage = useHintsStorage();
+    const storage = useHintsStorage();
+
+    const isIndexRoute = () => {
+        return !selectedRouteSegment
+    }
 
     useEffect(() => {
 
-        if (hintStorage.isSeen('intro')) return
+        if (storage.isSeen('intro')) return
 
         if (isIndexRoute()) {
             isBeenIndexRoute.current = true;
@@ -27,7 +31,7 @@ export const useIntroHintDisplay = (
             else {
                 setShowComponent(false);
                 if (isBeenIndexRoute.current) {
-                    hintStorage.save('intro')
+                    storage.save('intro')
                 }
             }
         }
@@ -39,10 +43,7 @@ export const useIntroHintDisplay = (
     }, [selectedRouteSegment]);
 
 
-    function isIndexRoute() {
-        return !selectedRouteSegment
-    }
-
+ 
 
     return {asToast: showToast, asComponent: showComponent};
 };

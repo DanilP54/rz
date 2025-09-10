@@ -19,23 +19,23 @@ interface PanelProps {
 export function Panel({ state, panel, onToggle, segment, onCloseNavLinksPreview }: PanelProps) {
 
     const pathname = usePathname();
-    const hintStorage = useHintsStorage();
-    const hintToast = useToastHintManager();
+    const storage = useHintsStorage();
+    const toast = useToastHintManager();
     const navLinksPreviewRef = useRef<Nullable<HTMLElement>>(null);
 
     useEffect(() => {
 
-        if (hintStorage.isSeen(segment)) return;
+        if (storage.isSeen(segment)) return;
 
         let hintId: Option<string | number>;
 
         if (state === 'selected') {
-            hintStorage.save(segment)
-            hintId = hintToast.show(panel.about);
+            storage.save(segment)
+            hintId = toast.show(panel.about);
         }
 
         return () => {
-            if (hintId) hintToast.hide(hintId)
+            if (hintId) toast.hide(hintId)
         }
     }, [state]);
 
