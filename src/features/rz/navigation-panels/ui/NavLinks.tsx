@@ -6,16 +6,16 @@ import { NavLinks } from "@/features/rz/navigation-panels/types";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
 
 
-interface NavLinksProps {
+interface INavLinksProps {
     links: NavLinks;
     segment: RZ_SEGMENTS;
 }
 
-interface NavLinksPreviewProps extends NavLinksProps {
+interface INavLinksPreviewProps extends INavLinksProps {
     ref: Ref<HTMLElement>;
 }
 
-export function NavLinksPreview({ links, segment, ref }: NavLinksPreviewProps) {
+export function NavLinksPreview({ links, segment, ref }: INavLinksPreviewProps) {
     return (
         <nav ref={ref} id="nav-preview"
             className={`${getBgColorOfSegment(segment)} flex flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl px-4 py-1`}>
@@ -36,14 +36,14 @@ export function NavLinksPreview({ links, segment, ref }: NavLinksPreviewProps) {
 }
 
 
-interface NavLinksSelectedProps extends NavLinksProps {
+interface INavLinksSelectedProps extends INavLinksProps {
     pathname: string
 }
 
-export function NavLinksSelected({ links, pathname, segment }: NavLinksSelectedProps) {
+export function NavLinksSelected({ links, pathname, segment }: INavLinksSelectedProps) {
     return (
         <nav data-testid={`${segment}-selected`} id="nav-selected"
-            className={`${getBgColorOfSegment(segment)} flex items-center justify-between gap-1 *:text-[9px] *:data-[active=true]:text-[20px] text-white font-bold w-full h-full`}>
+            className={`${getBgColorOfSegment(segment)} flex items-center justify-between gap-1 *:text-[9px] *:data-[active=true]:text-[20px] text-white font-bold w-full h-full border`}>
             <For each={links}>
                 {(link) => (
                     <Link

@@ -8,11 +8,11 @@ const customStyle: CSSProperties = {
   padding: "3px",
 } as const;
 
-export const useToastHintManager = () => {
+export const toastHintManager = () => {
   const show = (message: string, options?: ExternalToast) => {
     return toast(message, {
       ...options,
-      style: customStyle
+      style: customStyle,
     });
   };
 

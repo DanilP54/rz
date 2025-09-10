@@ -3,61 +3,59 @@ import { useEffect, useState } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { For } from "@/shared/For";
 import { navigationConfig } from "./config";
-import { Panel } from "./Panel";
-import { useIntroHintDisplay } from "@/features/rz/navigation-panels/useIntroHintDisplay";
-import { useToastHintManager } from "@/features/rz/navigation-panels/useToastHintManager";
+import { Panel } from "./ui/Panel";
+import { useIntroHintDisplay } from "@/features/rz/navigation-panels/lib/useIntroHintDisplay";
+import { toastHintManager } from "@/features/rz/navigation-panels/lib/toastHintManager";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
+import { IntroHintDisplay } from "@/features/rz/navigation-panels/ui/IntroHintDisplay";
 
-export const Navigation = ({ isMobileDevice }: { isMobileDevice?: boolean }) => {
+export const Navigation = ({
+  isMobileDevice,
+}: {
+  isMobileDevice?: boolean;
+}) => {
+  const selectedSegment = useSelectedLayoutSegment() as Nullable<RZ_SEGMENTS>;
+  const [openPreviewSegment, setOpenPreviewSegment] =
+    useState<Nullable<RZ_SEGMENTS>>(null);
+  const toast = toastHintManager();
+  const displayIntroHint = useIntroHintDisplay(selectedSegment, true);
 
-    const selectedSegment = useSelectedLayoutSegment() as Option<RZ_SEGMENTS>;
-    const [previewNavLinksSegment, setPreviewNavLinksSegment] = useState<RZ_SEGMENTS | null>(null);
-    const hintToast = useToastHintManager();
-    const displayIntroHint = useIntroHintDisplay(selectedSegment, true);
-
-    useEffect(() => {
-        if (displayIntroHint.asToast) hintToast.show(navigationConfig.introText);
-    }, [selectedSegment, displayIntroHint.asToast]);
-
-    const getPanelState = (segment: RZ_SEGMENTS) => {
-        if (segment === selectedSegment) return "selected";
-        if (segment === previewNavLinksSegment) return "preview";
-        return "closed";
-    };
-
-    function previewNavLinksToggle(segment: RZ_SEGMENTS) {
-        setPreviewNavLinksSegment((prev) => prev === segment ? null : segment)
+  useEffect(() => {
+    if (displayIntroHint.asToast) {
+      toast.show(navigationConfig.intro.text);
     }
+  }, [selectedSegment, displayIntroHint.asToast]);
 
-    return (
-        <div id="navigation" className=" relative flex flex-col">
-            <For each={navigationConfig.getSegmentsList()}>
-                {(segment) => {
-                    const panel = navigationConfig.panels[segment];
-                    return (
-                        <Panel
-                            key={segment}
-                            segment={segment}
-                            panel={panel}
-                            state={getPanelState(segment)}
-                            onToggle={() => previewNavLinksToggle(segment)}
-                            onCloseNavLinksPreview={() => setPreviewNavLinksSegment(null)}
-                        />
-                    );
-                }}
-            </For>
-            {displayIntroHint.asComponent && <IntroHint text={navigationConfig.introText} />}
-        </div>
-    );
+  const getPanelState = (segment: RZ_SEGMENTS) => {
+    if (segment === selectedSegment) return "selected";
+    if (segment === openPreviewSegment) return "preview";
+    return "closed";
+  };
+
+  const handlePreviewToggle = (segment: RZ_SEGMENTS) => {
+    setOpenPreviewSegment((prev) => (prev === segment ? null : segment));
+  };
+
+  return (
+    <div id="navigation" className="relative flex flex-col">
+      <For each={navigationConfig.getSegmentsList()}>
+        {(segment) => {
+          const panel = navigationConfig.segments[segment];
+          return (
+            <Panel
+              key={segment}
+              segment={segment}
+              panel={panel}
+              state={getPanelState(segment)}
+              previewToggle={() => handlePreviewToggle(segment)}
+              handleClosePreview={() => {}}
+            />
+          );
+        }}
+      </For>
+      {displayIntroHint.asComponent && (
+        <IntroHintDisplay text={navigationConfig.intro.text} />
+      )}
+    </div>
+  );
 };
-
-
-function IntroHint({ text }: { text: string }) {
-    return (
-        <div className="absolute top-0 flex h-[120px] items-center right-0 w-[calc(100%-35px)]">
-            <div className="flex items-center justify-center text-center px-3">
-                <span className="grow font-bold text-xs">{text}</span>
-            </div>
-        </div>
-    );
-}

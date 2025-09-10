@@ -31,7 +31,7 @@ describe("Navigation интеграционные сценарии", () => {
       expect(panel).toHaveAttribute("data-preview", "false");
     });
     // Интро-хинт отображается как компонент
-    expect(screen.getByText(navigationConfig.introText)).toBeInTheDocument();
+    expect(screen.getByText(navigationConfig.intro.text)).toBeInTheDocument();
   });
 
   test("Рендер с выбранным сегментом: панель активна", () => {
@@ -79,7 +79,7 @@ describe("Navigation интеграционные сценарии", () => {
   test("Интро-хинт отображается как компонент", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
     render(<Navigation />);
-    expect(screen.getByText(navigationConfig.introText)).toBeInTheDocument();
+    expect(screen.getByText(navigationConfig.intro.text)).toBeInTheDocument();
   });
 });
 
@@ -109,7 +109,7 @@ describe("Navigation localStorage поведение", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
     render(<Navigation />);
     // Интро-хинт не должен отображаться
-    expect(screen.queryByText(navigationConfig.introText)).toBeNull();
+    expect(screen.queryByText(navigationConfig.intro.text)).toBeNull();
   });
 
   test("При первом выборе панели сегмент записывается в localStorage", () => {

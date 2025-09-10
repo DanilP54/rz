@@ -1,12 +1,16 @@
 import { Header } from "@/features/rz/Header";
 import { Navigation } from "@/features/rz/navigation-panels";
+import { getFeature } from "@/shared/infra/feature-flag/getFeature";
 import React from "react";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const isEnabled = await getFeature('FEATURE_MESSAGES')
+  console.log(isEnabled)
 
   return (
     <div
