@@ -15,8 +15,7 @@ export const Navigation = ({
   isMobileDevice?: boolean;
 }) => {
   const selectedSegment = useSelectedLayoutSegment() as Nullable<RZ_SEGMENTS>;
-  const [openPreviewSegment, setOpenPreviewSegment] =
-    useState<Nullable<RZ_SEGMENTS>>(null);
+  const [openPreviewSegment, setOpenPreviewSegment] = useState<Nullable<RZ_SEGMENTS>>(null);
   const toast = toastHintManager();
   const displayIntroHint = useIntroHintDisplay(selectedSegment, true);
 
@@ -48,7 +47,7 @@ export const Navigation = ({
               panel={panel}
               state={getPanelState(segment)}
               previewToggle={() => handlePreviewToggle(segment)}
-              handleClosePreview={() => {}}
+              handleClosePreview={() => setOpenPreviewSegment(null)}
             />
           );
         }}
