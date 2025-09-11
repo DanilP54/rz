@@ -1,4 +1,4 @@
-import {RZ_SEGMENTS} from "@/shared/model/routes";
+import { RZ_SEGMENTS } from "@/shared/model/routes";
 
 export type PanelState = "selected" | "preview" | "closed";
 
@@ -15,7 +15,7 @@ export type Panel = {
 };
 
 export type NavigationConfig = {
-  readonly intro: {text: string};
+  readonly intro: { text: string };
   readonly segments: Record<RZ_SEGMENTS, Panel>;
-  readonly getSegmentsList: () => RZ_SEGMENTS[]
+  readonly getSegmentsKeys: () => RZ_SEGMENTS[];
 };
