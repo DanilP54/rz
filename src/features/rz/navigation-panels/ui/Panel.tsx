@@ -12,6 +12,8 @@ import { RZ_SEGMENTS } from "@/shared/model/routes";
 import { ToggleButton } from "@/features/rz/navigation-panels/ui/Toggle";
 import { Toggle } from "@/shared/ui/toggle";
 import { getBgColorOfSegment } from "@/shared/lib/segment-bg-colors";
+import Link from "next/link";
+import { For } from "@/shared/For";
 
 type PanelState = "selected" | "preview" | "closed";
 
@@ -54,7 +56,8 @@ export function Panel({
     handleClosePreview()
   );
 
-  const isOpenPreview = state === 'preview'
+  const isOpenPreview = state === "preview";
+  const isSelected = state === "selected";
 
   return (
     <div
@@ -66,23 +69,35 @@ export function Panel({
     >
       <Toggle
         data-pressed={isOpenPreview}
-        data-state={isOpenPreview ? 'on' : 'off'}
+        data-state={isOpenPreview ? "on" : "off"}
         aria-haspopup="true"
         aria-expanded={isOpenPreview}
-        aria-controls="menu"
+        aria-controls="menu2"
         onClick={previewToggle}
-        className={`w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${getBgColorOfSegment(segment)}`}
+        className={`${isSelected ? 'hidden' : 'block'} w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${getBgColorOfSegment(
+          segment
+        )}`}
       >
-        {state === "preview" && (
-          <NavLinksPreview
-            links={panel.links}
-            segment={segment}
-            ref={previewRef}
-          />
-        )}
+        <ul role="menu" id="menu2" className={`${isOpenPreview ? 'flex' : 'hidden'} ${getBgColorOfSegment(segment)} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl px-4 py-1`}>
+          <For each={panel.links}>
+            {(link) => (
+              <li role="none" key={link.label}>
+                <Link
+                  role="menuitem"
+                  key={link.href}
+                  href={link.href}
+                  prefetch={false}
+                  className="flex items-center h-full"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            )}
+          </For>
+        </ul>
       </Toggle>
 
-      {state === "selected" && (
+      {isSelected && (
         <NavLinksSelected
           links={panel.links}
           segment={segment}
