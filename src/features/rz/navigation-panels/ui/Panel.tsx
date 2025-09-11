@@ -104,22 +104,6 @@ export function Panel({
           pathname={pathname}
         />
       )}
-      {/* <ToggleButton onToggle={previewToggle} segment={segment}>
-        {state === "preview" && (
-          <NavLinksPreview
-            links={panel.links}
-            segment={segment}
-            ref={previewRef}
-          />
-        )}
-        {state === "selected" && (
-          <NavLinksSelected
-            links={panel.links}
-            segment={segment}
-            pathname={pathname}
-          />
-        )}
-      </ToggleButton> */}
     </div>
   );
 }
