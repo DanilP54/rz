@@ -47,7 +47,7 @@ export const Navigation = ({
               panel={panel}
               state={getPanelState(segment)}
               previewToggle={() => handlePreviewToggle(segment)}
-              handleClosePreview={() => setOpenPreviewSegment(null)}
+              handleClosePreview={() => {}}
             />
           );
         }}

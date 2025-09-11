@@ -10,6 +10,8 @@ import { usePathname } from "next/navigation";
 import { toastHintManager } from "@/features/rz/navigation-panels/lib/toastHintManager";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
 import { ToggleButton } from "@/features/rz/navigation-panels/ui/Toggle";
+import { Toggle } from "@/shared/ui/toggle";
+import { getBgColorOfSegment } from "@/shared/lib/segment-bg-colors";
 
 type PanelState = "selected" | "preview" | "closed";
 
@@ -52,15 +54,42 @@ export function Panel({
     handleClosePreview()
   );
 
+  const isOpenPreview = state === 'preview'
+
   return (
     <div
       id={`${segment} panel`}
       data-testid={`${segment}-panel`}
       data-selected={state === "selected"}
       data-preview={state === "preview"}
-      className={`group relative order-1 data-[selected=true]:order-0`}
+      className={`group relative order-1 data-[selected=true]:order-0 h-[40px]`}
     >
-      <ToggleButton onToggle={previewToggle} segment={segment}>
+      <Toggle
+        data-pressed={isOpenPreview}
+        data-state={isOpenPreview ? 'on' : 'off'}
+        aria-haspopup="true"
+        aria-expanded={isOpenPreview}
+        aria-controls="menu"
+        onClick={previewToggle}
+        className={`w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${getBgColorOfSegment(segment)}`}
+      >
+        {state === "preview" && (
+          <NavLinksPreview
+            links={panel.links}
+            segment={segment}
+            ref={previewRef}
+          />
+        )}
+      </Toggle>
+
+      {state === "selected" && (
+        <NavLinksSelected
+          links={panel.links}
+          segment={segment}
+          pathname={pathname}
+        />
+      )}
+      {/* <ToggleButton onToggle={previewToggle} segment={segment}>
         {state === "preview" && (
           <NavLinksPreview
             links={panel.links}
@@ -75,7 +104,7 @@ export function Panel({
             pathname={pathname}
           />
         )}
-      </ToggleButton>
+      </ToggleButton> */}
     </div>
   );
 }
