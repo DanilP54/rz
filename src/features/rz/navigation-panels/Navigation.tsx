@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { For } from "@/shared/For";
 import { navigationConfig } from "./config";
-import { Panel } from "./ui/Panel";
+import { NavigationPanel } from "./ui/Panel";
 import { useIntroHintDisplay } from "@/features/rz/navigation-panels/lib/useIntroHintDisplay";
 import { toastHintManager } from "@/features/rz/navigation-panels/lib/toastHintManager";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
-import { IntroHintDisplay } from "@/features/rz/navigation-panels/ui/IntroHintDisplay";
+import { NavIntroHintDisplay } from "@/features/rz/navigation-panels/ui/NavIntroHintDisplay";
 
 export const Navigation = ({
   isMobileDevice,
@@ -38,23 +38,25 @@ export const Navigation = ({
 
   return (
     <div id="navigation" className="relative flex flex-col">
-      <For each={navigationConfig.getSegmentsKeys()}>
-        {(segment) => {
-          const panel = navigationConfig.segments[segment];
-          return (
-            <Panel
-              key={segment}
-              segment={segment}
-              panel={panel}
-              state={getPanelState(segment)}
-              previewToggle={() => handlePreviewToggle(segment)}
-              handleClosePreview={() => {}}
-            />
-          );
-        }}
-      </For>
+      <nav aria-label="Rodnaya Zemlya">
+        <For each={Object.keys(navigationConfig.segments) as RZ_SEGMENTS[]}>
+          {(segment) => {
+            const panel = navigationConfig.segments[segment];
+            return (
+              <NavigationPanel
+                key={segment}
+                segment={segment}
+                panel={panel}
+                state={getPanelState(segment)}
+                previewToggle={() => handlePreviewToggle(segment)}
+                handleClosePreview={() => {}}
+              />
+            );
+          }}
+        </For>
+      </nav>
       {displayIntroHint.asComponent && (
-        <IntroHintDisplay text={navigationConfig.intro.text} />
+        <NavIntroHintDisplay text={navigationConfig.intro.text} />
       )}
     </div>
   );

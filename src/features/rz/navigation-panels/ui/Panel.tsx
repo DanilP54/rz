@@ -9,7 +9,6 @@ import {
 import { usePathname } from "next/navigation";
 import { toastHintManager } from "@/features/rz/navigation-panels/lib/toastHintManager";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
-import { ToggleButton } from "@/features/rz/navigation-panels/ui/Toggle";
 import { Toggle } from "@/shared/ui/toggle";
 import { getBgColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
@@ -17,7 +16,7 @@ import { For } from "@/shared/For";
 
 type PanelState = "selected" | "preview" | "closed";
 
-interface IPanel {
+interface INavigationPanel {
   state: PanelState;
   segment: RZ_SEGMENTS;
   panel: TPanel;
@@ -25,13 +24,13 @@ interface IPanel {
   handleClosePreview: () => void;
 }
 
-export function Panel({
+export function NavigationPanel({
   state,
   panel,
   previewToggle,
   segment,
   handleClosePreview,
-}: IPanel) {
+}: INavigationPanel) {
   const pathname = usePathname();
   const storage = useHintsStorage();
   const toast = toastHintManager();
@@ -56,7 +55,7 @@ export function Panel({
     handleClosePreview()
   );
 
-  const isOpenPreview = state === "preview";
+  const isPreview = state === "preview";
   const isSelected = state === "selected";
 
   return (
@@ -68,23 +67,30 @@ export function Panel({
       className={`group relative order-1 data-[selected=true]:order-0 h-[40px]`}
     >
       <Toggle
-        data-pressed={isOpenPreview}
-        data-state={isOpenPreview ? "on" : "off"}
+        data-pressed={isPreview}
+        aria-expanded={isPreview}
+        data-state={isPreview ? "on" : "off"}
         aria-haspopup="true"
-        aria-expanded={isOpenPreview}
         aria-controls="menu2"
         onClick={previewToggle}
-        className={`${isSelected ? 'hidden' : 'block'} w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${getBgColorOfSegment(
+        className={`${
+          isSelected ? "hidden" : "block"
+        } w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${getBgColorOfSegment(
           segment
         )}`}
       >
-        <ul role="menu" id="menu2" className={`${isOpenPreview ? 'flex' : 'hidden'} ${getBgColorOfSegment(segment)} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl px-4 py-1`}>
+        <ul
+          tabIndex={-1}
+          aria-label="Rodnaya Zemlya"
+          id="menu2"
+          className={`${isPreview ? "flex" : "hidden"} ${getBgColorOfSegment(
+            segment
+          )} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl px-4 py-1`}
+        >
           <For each={panel.links}>
             {(link) => (
-              <li role="none" key={link.label}>
+              <li key={link.label}>
                 <Link
-                  tabIndex={-1}
-                  role="menuitem"
                   key={link.href}
                   href={link.href}
                   prefetch={false}
@@ -105,5 +111,92 @@ export function Panel({
         />
       )}
     </div>
+  );
+}
+
+function DisclosureNavigationMenu({
+  panel,
+  isPreview,
+  onToggle,
+}: {
+  panel: TPanel;
+  isPreview: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <>
+      <Toggle
+        data-pressed={isPreview}
+        aria-expanded={isPreview}
+        data-state={isPreview ? "on" : "off"}
+        aria-haspopup="true"
+        aria-controls="menu2"
+        onClick={onToggle}
+        className={`w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${getBgColorOfSegment(
+          panel.name
+        )}`}
+      >
+        <ul
+          tabIndex={-1}
+          aria-label="Rodnaya Zemlya"
+          id="menu2"
+          className={`${isPreview ? "flex" : "hidden"} ${getBgColorOfSegment(
+            panel.name
+          )} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl px-4 py-1`}
+        >
+          <For each={panel.links}>
+            {(link) => (
+              <li key={link.label}>
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  prefetch={false}
+                  className="flex items-center h-full"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            )}
+          </For>
+        </ul>
+      </Toggle>
+    </>
+  );
+}
+
+function NavigationMenu({
+  panel,
+  pathname,
+}: {
+  panel: TPanel;
+  pathname: string;
+}) {
+  return (
+    <ul
+      aria-label="Rodnaya Zemlya"
+      data-testid={`${panel.name}-selected`}
+      id="nav-selected"
+      className={`${getBgColorOfSegment(
+        panel.name
+      )} flex items-center justify-between gap-1 text-white font-bold w-full h-full border`}
+    >
+      <For each={panel.links}>
+        {(link) => (
+          <li
+            key={link.href}
+            className="w-full h-full flex items-center justify-center *:data-[active=true]:text-[20px] *:text-[9px]"
+          >
+            <Link
+              data-active={pathname.includes(link.href)}
+              href={link.href}
+              prefetch={false}
+              className="order-1  data-[active=true]:order-0 data-[active=true]:text-black data-[active=true]:pb-[4px]"
+            >
+              {link.label}
+            </Link>
+          </li>
+        )}
+      </For>
+    </ul>
   );
 }
