@@ -83,6 +83,7 @@ export function Panel({
             {(link) => (
               <li role="none" key={link.label}>
                 <Link
+                  tabIndex={-1}
                   role="menuitem"
                   key={link.href}
                   href={link.href}
@@ -96,7 +97,6 @@ export function Panel({
           </For>
         </ul>
       </Toggle>
-
       {isSelected && (
         <NavLinksSelected
           links={panel.links}
