@@ -17,6 +17,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <div
+      id={'page'}
       data-segment={segment}
       data-hassegment={String(Boolean(segment))}
     >
