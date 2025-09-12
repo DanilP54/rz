@@ -62,13 +62,13 @@ export function NavigationPanel({
       data-preview={state === "preview"}
       className={`group relative order-1 data-[selected=true]:order-0 h-[40px]`}
     >
-      {!isSelected && <DisclosureNavigationMenu panel={panel} isPreview={isPreview} onToggle={previewToggle}/>}
-      {isSelected && <NavigationMenu panel={panel} pathname={pathname} />}
+      {!isSelected && <PreviewNavMenu panel={panel} isPreview={isPreview} onToggle={previewToggle}/>}
+      {isSelected && <SelectedNavMenu panel={panel} pathname={pathname} />}
     </div>
   );
 }
 
-function DisclosureNavigationMenu({
+function PreviewNavMenu({
   panel,
   isPreview,
   onToggle,
@@ -119,7 +119,7 @@ function DisclosureNavigationMenu({
   );
 }
 
-function NavigationMenu({
+function SelectedNavMenu({
   panel,
   pathname,
 }: {
