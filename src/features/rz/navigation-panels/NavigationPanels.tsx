@@ -11,7 +11,7 @@ import { useOnClickOutside } from "usehooks-ts";
 import { SelectedNavigationPanel } from "./ui/SelectedNavigationPanel";
 import { DesclosureNavigationPanel } from "./ui/DesclosureNavigationPanel";
 
-export const Navigation = ({
+export const NavigationPanels = ({
   isMobileDevice,
 }: {
   isMobileDevice?: boolean;
@@ -46,7 +46,7 @@ export const Navigation = ({
 
   return (
     <div ref={navBoxRef} id="navigation" className="relative">
-      <nav aria-label="Rodnaya Zemlya">
+      <nav>
         <ul className="flex flex-col">
           <For each={Object.keys(navigationConfig.segments) as RZ_SEGMENTS[]}>
             {(segment) => {
