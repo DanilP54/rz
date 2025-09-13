@@ -1,6 +1,6 @@
 import { AppLogoTheme } from "@/shared/AppLogo";
 import { GlobalSearchButton } from "@/shared/GlobalSearchButton";
-import { getBgColorOfSegment } from "@/shared/lib/segment-bg-colors";
+import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import { SideBarMobile } from "@/shared/SideBarMobile";
 import ThemeToggle from "@/shared/ThemeToggle";
 import { Menu } from "lucide-react";
@@ -16,7 +16,7 @@ export default async function Layout({
 }>) {
     const { segment } = await params
     return (
-        <div className={`${getBgColorOfSegment(segment)} flex flex-col h-screen text-black overflow-auto`}>
+        <div className={`${getColorOfSegment(segment)} flex flex-col h-screen text-black overflow-auto`}>
             <Header />
             {/* {!fullscreen && <DetailsHeader variant={variant} />} */}
             <div className="grow grid grid-cols-1 p-3 justify-center sm:p-0 sm:justify-normal sm:grid-cols-[1fr_6fr_1fr] lg:grid-cols-[1fr_3fr_1fr]">

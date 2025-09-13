@@ -14,7 +14,7 @@ export default function Home() {
         <nav className="flex justify-center gap-5 text-md font-bold [&_a]:hover:underline">
           <Link href={ROUTES.feed}>feed</Link>
           <Link href={ROUTES.radio}>rz radio</Link>
-          <Link href={ROUTES.rz.index}>rz</Link>
+          <Link href={ROUTES.rz.root}>rz</Link>
         </nav>
       </div>
     </div>

@@ -23,7 +23,6 @@ export const useIntroHintDisplay = (
 
         if (isIndexRoute()) {
             isBeenIndexRoute.current = true;
-
         }
 
         if (isMobile) {
