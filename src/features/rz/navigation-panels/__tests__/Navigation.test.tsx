@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Navigation } from "@/features/rz/navigation-panels/Navigation";
+import { NavigationPanels } from "@/features/rz/navigation-panels/NavigationPanels";
 import * as nextNavigation from "next/navigation";
 import { navigationConfig } from "../config";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
@@ -23,7 +23,7 @@ afterEach(() => {
 describe("Navigation интеграционные сценарии", () => {
   test("Рендер по умолчанию: все панели закрыты, интро-хинт отображается", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     // Все панели должны быть закрыты
     navigationConfig.getSegmentsList().forEach((segment) => {
       const panel = screen.getByTestId(`${segment}-panel`);
@@ -37,7 +37,7 @@ describe("Navigation интеграционные сценарии", () => {
   test("Рендер с выбранным сегментом: панель активна", () => {
     const segment = getFirstSegment();
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(segment);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     // Только выбранная панель активна
     navigationConfig.getSegmentsList().forEach((s) => {
       const panel = screen.getByTestId(`${s}-panel`);
@@ -51,7 +51,7 @@ describe("Navigation интеграционные сценарии", () => {
 
   test("Клик по панели: появляется preview", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     const segment = getFirstSegment();
     const panel = screen.getByTestId(`${segment}-panel`);
     // Клик по панели
@@ -64,7 +64,7 @@ describe("Navigation интеграционные сценарии", () => {
 
   test("Клик вне превью закрывает preview", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     const segment = getFirstSegment();
     const panel = screen.getByTestId(`${segment}-panel`);
     // Клик по панели (открыть preview)
@@ -78,7 +78,7 @@ describe("Navigation интеграционные сценарии", () => {
 
   test("Интро-хинт отображается как компонент", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     expect(screen.getByText(navigationConfig.intro.text)).toBeInTheDocument();
   });
 });
@@ -88,26 +88,26 @@ describe("Navigation интеграционные сценарии", () => {
 
 
 describe("Navigation localStorage поведение", () => {
-//   afterEach(() => {
-//     localStorage.clear();
-//   });
+  //   afterEach(() => {
+  //     localStorage.clear();
+  //   });
 
   test("При первом посещении интро-хинт записывается в localStorage", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     // После рендера интро-хинт должен быть записан в localStorage после ухода с index
     // Симулируем уход с index (смена сегмента)
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(
       getFirstSegment()
     );
-    render(<Navigation />);
+    render(<NavigationPanels />);
     expect(JSON.parse(localStorage.getItem("seenHint")!)).toContain("intro");
   });
 
   test("При повторном посещении интро-хинт не показывается, если есть в localStorage", () => {
     localStorage.setItem("seenHint", JSON.stringify(["intro"]));
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(null);
-    render(<Navigation />);
+    render(<NavigationPanels />);
     // Интро-хинт не должен отображаться
     expect(screen.queryByText(navigationConfig.intro.text)).toBeNull();
   });
@@ -116,7 +116,7 @@ describe("Navigation localStorage поведение", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(
       getFirstSegment()
     );
-    render(<Navigation />);
+    render(<NavigationPanels />);
     expect(JSON.parse(localStorage.getItem("seenHint")!)).toContain(
       getFirstSegment()
     );
@@ -127,7 +127,7 @@ describe("Navigation localStorage поведение", () => {
     vi.mocked(nextNavigation.useSelectedLayoutSegment).mockReturnValue(
       getFirstSegment()
     );
-    render(<Navigation />);
+    render(<NavigationPanels />);
     // Подсказка не должна показываться (можно проверить отсутствие вызова hintToast, но мы как черный ящик — проверяем только DOM)
     // Проверяем, что панель активна, но подсказки нет (например, по отсутствию специфичного текста about)
     // Здесь можно добавить проверку, если about-текст отображается в DOM
