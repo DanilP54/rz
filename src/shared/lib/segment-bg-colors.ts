@@ -1,6 +1,6 @@
 import {RZ_SEGMENTS} from "@/shared/model/routes";
 
-export const getBgColorOfSegment = (segment?: RZ_SEGMENTS, opacity?: number) => {
+export const getColorOfSegment = (segment?: RZ_SEGMENTS, opacity?: number) => {
   if (!segment) return "";
 
   const colors = {

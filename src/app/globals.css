@@ -104,25 +104,11 @@
 
 }
 
-@layer base {
-  * {
-    /* @apply border-border outline-ring/50; */
-
-  }
-
-  body {
-    @apply bg-background text-foreground transition-colors duration-400 ease-linear;
-  }
-}
-
-/* Отключаем анимации для пользователей, которые предпочитают их не использовать */
 @media (prefers-reduced-motion: reduce) {
   * {
     transition-duration: 0.01ms !important;
   }
 }
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
