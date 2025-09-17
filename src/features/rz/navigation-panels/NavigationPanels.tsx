@@ -9,19 +9,19 @@ import { RZ_SEGMENTS } from "@/shared/model/routes";
 import { NavIntroHintDisplay } from "@/features/rz/navigation-panels/ui/NavIntroHintDisplay";
 import { useOnClickOutside } from "usehooks-ts";
 import { SelectedNavigationPanel } from "./ui/SelectedNavigationPanel";
-import { DesclosureNavigationPanel } from "./ui/DesclosureNavigationPanel";
+import { DisclosureNavigationPanel } from "./ui/DisclosureNavigationPanel";
 
 export const NavigationPanels = ({
   isMobileDevice,
 }: {
-  isMobileDevice?: boolean;
+  isMobileDevice: boolean;
 }) => {
 
   const selectedPanel = useSelectedLayoutSegment() as Nullable<RZ_SEGMENTS>;
   const pathname = usePathname()
-  const [expendedPanel, setExpendedPanel] = useState<Nullable<RZ_SEGMENTS>>(null);
+  const [expandedPanel, setExpandedPanel] = useState<Nullable<RZ_SEGMENTS>>(null);
   const toast = toastHintManager();
-  const displayIntroHint = useIntroHintDisplay(selectedPanel, true);
+  const displayIntroHint = useIntroHintDisplay(selectedPanel, isMobileDevice);
   const navBoxRef = useRef<Nullable<HTMLDivElement>>(null);
 
   useEffect(() => {
@@ -31,37 +31,39 @@ export const NavigationPanels = ({
   }, [selectedPanel, displayIntroHint.asToast])
 
   useEffect(() => {
-    if (!!expendedPanel) {
-      setExpendedPanel(null)
+    if (!!expandedPanel) {
+      setExpandedPanel(null)
     }
   }, [pathname])
 
   const handleToggle = (segment: RZ_SEGMENTS) => {
-    setExpendedPanel((prev) => (prev === segment ? null : segment));
+    setExpandedPanel((prev) => (prev === segment ? null : segment));
   };
 
   useOnClickOutside(navBoxRef as RefObject<HTMLDivElement>, (e) => {
-    setExpendedPanel(null)
+    setExpandedPanel(null)
   });
 
   return (
-    <div ref={navBoxRef} id="navigation" className="relative">
-      <nav>
-        <ul className="flex flex-col">
-          <For each={Object.keys(navigationConfig.segments) as RZ_SEGMENTS[]}>
+    <div ref={navBoxRef} id="nav-wrap" className="relative">
+      <nav id="nav-root">
+        <ul id="nav-list" className="flex flex-col">
+          <For each={Object.keys(navigationConfig.panels) as RZ_SEGMENTS[]}>
             {(segment) => {
-              const panel = navigationConfig.segments[segment];
+              const panel = navigationConfig.panels[segment];
+              const isSelected = selectedPanel === segment
               return (
-                <li key={segment} className="order-1 [&:has([data-selected=true])]:order-0">
-                  {selectedPanel === segment ? (
+                <li id="nav-panel" key={segment} className="order-1 [&:has([data-selected=true])]:order-0">
+                  {isSelected ? (
                     <SelectedNavigationPanel
+                      isSelected={isSelected}
                       currentPath={pathname}
                       panel={panel}
                     />
                   ) : (
-                    <DesclosureNavigationPanel
+                    <DisclosureNavigationPanel
                       panel={panel}
-                      isExpanded={expendedPanel === segment}
+                      isExpanded={expandedPanel === segment}
                       onToggle={() => handleToggle(segment)}
                     />
                   )}

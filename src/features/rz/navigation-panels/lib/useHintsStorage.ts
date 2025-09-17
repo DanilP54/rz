@@ -8,8 +8,10 @@ export interface HintsStorage {
   isSeen: (hint: NavigationHints) => boolean,
 }
 
+export const STORAGE_KEY = 'seenHint'
+
 export const useHintsStorage = (): HintsStorage => {
-  const [seenHint, setSeenHint] = useLocalStorage<NavigationHints[]>("seenHint", []);
+  const [seenHint, setSeenHint] = useLocalStorage<NavigationHints[]>(STORAGE_KEY, []);
 
   const isSeen = (hint: NavigationHints) => {
     return seenHint.includes(hint);

@@ -10,12 +10,12 @@ export type NavLink = {
 export type NavLinks = List<NavLink>;
 
 export type Panel = {
-  readonly name: RZ_SEGMENTS;
-  readonly description: string;
+  readonly segment: RZ_SEGMENTS;
+  readonly hintText: string;
   readonly links: NavLinks;
 };
 
 export type NavigationConfig = {
   readonly intro: { text: string };
-  readonly segments: Record<RZ_SEGMENTS, Panel>;
+  readonly panels: Record<RZ_SEGMENTS, Panel>;
 };

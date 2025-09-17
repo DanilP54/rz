@@ -5,12 +5,15 @@ import { Panel as TPanel } from "../types";
 import { For } from "@/shared/For";
 import { toastHintManager } from "../lib/toastHintManager";
 import { useHintsStorage } from "../lib/useHintsStorage";
+import { BlockList } from "net";
 
 export function SelectedNavigationPanel({
   panel,
+  isSelected,
   currentPath,
 }: {
   panel: TPanel;
+  isSelected?: boolean;
   currentPath: string;
 }) {
 
@@ -18,12 +21,12 @@ export function SelectedNavigationPanel({
   const storage = useHintsStorage()
 
 
-  const bgColorPanel = getColorOfSegment(panel.name);
+  const bgColorPanel = getColorOfSegment(panel.segment);
 
   useEffect(() => {
-    if (storage.isSeen(panel.name)) return;
-    let id = toast.show(panel.description)
-    storage.save(panel.name)
+    if (storage.isSeen(panel.segment)) return;
+    let id = toast.show(panel.hintText)
+    storage.save(panel.segment)
     return () => {
       if (id) toast.hide(id)
     };
@@ -31,7 +34,7 @@ export function SelectedNavigationPanel({
 
   return (
     <div
-      id="selected-nav-panel"
+      data-testid={`slc-panel-${panel.segment}`}
       data-selected="true"
       className="group relative h-[40px]"
     >
@@ -47,7 +50,7 @@ export function SelectedNavigationPanel({
                 className="w-full h-full flex items-center justify-center *:data-[active=true]:text-[20px] *:text-[9px]"
               >
                 <Link
-                  aria-current={isActive}
+                  aria-current={isActive ? 'page' : undefined}
                   data-active={isActive}
                   href={link.href}
                   className="order-1 data-[active=true]:order-0 data-[active=true]:text-black data-[active=true]:pb-[4px]"
