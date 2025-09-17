@@ -1,4 +1,5 @@
 {
-    "editor.fontWeight": "100",
-    "editor.fontSize": 17
+    "editor.fontWeight": "500",
+    "editor.fontSize": 14,
+    "editor.fontFamily": "JetBrains Mono Medium"
 }
