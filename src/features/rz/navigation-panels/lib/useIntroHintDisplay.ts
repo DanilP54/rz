@@ -3,7 +3,7 @@ import {useHintsStorage} from "@/features/rz/navigation-panels/lib/useHintsStora
 import {RZ_SEGMENTS} from "@/shared/model/routes";
 
 export const useIntroHintDisplay = (
-    selectedRouteSegment: Option<RZ_SEGMENTS>,
+    activeRouteSegment: Nullable<RZ_SEGMENTS>,
     isMobile: boolean
 ) => {
     const [showComponent, setShowComponent] = useState(false);
@@ -14,7 +14,7 @@ export const useIntroHintDisplay = (
     const storage = useHintsStorage();
 
     const isIndexRoute = () => {
-        return !selectedRouteSegment
+        return !activeRouteSegment
     }
 
     useEffect(() => {
@@ -39,7 +39,7 @@ export const useIntroHintDisplay = (
             // TODO: logic for isMobile variants
         }
 
-    }, [selectedRouteSegment]);
+    }, [activeRouteSegment]);
 
 
  
