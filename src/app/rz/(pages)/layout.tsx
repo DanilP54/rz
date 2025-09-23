@@ -1,5 +1,5 @@
 import { Header } from "@/features/rz/Header";
-import { Navigation } from "@/features/rz/navigation-panels";
+import { Navigation } from "@/features/rz/navigation";
 import React from "react";
 
 export default async function Layout({

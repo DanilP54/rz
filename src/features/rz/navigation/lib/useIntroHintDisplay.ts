@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {useHintsStorage} from "@/features/rz/navigation-panels/lib/useHintsStorage";
+import {useHintsStorage} from "@/features/rz/navigation/lib/useHintsStorage";
 import {RZ_SEGMENTS} from "@/shared/model/routes";
 
 export const useIntroHintDisplay = (
@@ -9,7 +9,7 @@ export const useIntroHintDisplay = (
     const [showComponent, setShowComponent] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
-    const isBeenIndexRoute = useRef(false)
+    const userIsBeenIndexRoute = useRef(false)
 
     const storage = useHintsStorage();
 
@@ -17,19 +17,23 @@ export const useIntroHintDisplay = (
         return !activeRouteSegment
     }
 
+    const userIsBeenSegmentRoute = () => {
+        return !storage.isEmpty()
+    }
+
     useEffect(() => {
 
         if (storage.isSeen('intro')) return
 
         if (isIndexRoute()) {
-            isBeenIndexRoute.current = true;
+            userIsBeenIndexRoute.current = true;
         }
 
         if (isMobile) {
             if (isIndexRoute()) setShowComponent(true);
             else {
                 setShowComponent(false);
-                if (isBeenIndexRoute.current) {
+                if (userIsBeenIndexRoute.current) {
                     storage.save('intro')
                 }
             }

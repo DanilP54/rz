@@ -1,11 +1,12 @@
 import { useLocalStorage } from "usehooks-ts";
 import {RZ_SEGMENTS} from "@/shared/model/routes";
 
-type NavigationHints = RZ_SEGMENTS | "intro";
+export type NavigationHints = RZ_SEGMENTS | "intro";
 
 export interface HintsStorage {
-  save: (hint: NavigationHints) => void,
-  isSeen: (hint: NavigationHints) => boolean,
+  isEmpty(): boolean,
+  save(hint: NavigationHints): void,
+  isSeen(hint: NavigationHints): boolean,
 }
 
 export const STORAGE_KEY = 'seenHint'
@@ -21,9 +22,13 @@ export const useHintsStorage = (): HintsStorage => {
     setSeenHint((prev) => [...prev, hint]);
   };
 
+  const isEmpty = () => {
+    return seenHint.length === 0
+  }
 
 
   return {
+    isEmpty, 
     isSeen,
     save,
   };

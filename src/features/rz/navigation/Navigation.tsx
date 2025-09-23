@@ -2,16 +2,30 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { For } from "@/shared/For";
-import { navigationConfig } from "./config";
-import { useIntroHintDisplay } from "@/features/rz/navigation-panels/lib/useIntroHintDisplay";
-import { toastHintManager } from "@/features/rz/navigation-panels/lib/toastHintManager";
+import { config } from "./config";
+import { useIntroHintDisplay } from "@/features/rz/navigation/lib/useIntroHintDisplay";
+import { toastHintManager } from "@/features/rz/navigation/lib/toastHintManager";
 import { RZ_SEGMENTS } from "@/shared/model/routes";
-import { NavIntroHintDisplay } from "@/features/rz/navigation-panels/ui/NavIntroHintDisplay";
+import { NavIntroHintDisplay } from "@/features/rz/navigation/ui/NavIntroHintDisplay";
 import { useOnClickOutside } from "usehooks-ts";
 import { SelectedNavigationPanel } from "./ui/SelectedNavigationPanel";
 import { DisclosureNavigationPanel } from "./ui/DisclosureNavigationPanel";
 
-export const NavigationPanels = ({
+
+const segments = Object.keys(config.panels) as RZ_SEGMENTS[];
+
+const getSortedSegments = (
+  activeRouteSegment: Nullable<RZ_SEGMENTS>,
+  isMobileDevice: boolean
+): RZ_SEGMENTS[] => {
+  return [...segments].sort((a, b) => {
+    if (a === activeRouteSegment) return isMobileDevice ? -1 : 1;
+    if (b === activeRouteSegment) return isMobileDevice ? 1 : -1;
+    return 0;
+  });
+};
+
+export const Navigation = ({
   isMobileDevice,
 }: {
   isMobileDevice: boolean;
@@ -22,11 +36,13 @@ export const NavigationPanels = ({
   const [expandedPanel, setExpandedPanel] = useState<Nullable<RZ_SEGMENTS>>(null);
   const toast = toastHintManager();
   const displayIntroHint = useIntroHintDisplay(activeRouteSegment, isMobileDevice);
-  const navBoxRef = useRef<Nullable<HTMLDivElement>>(null);
+  const navRef = useRef<Nullable<HTMLDivElement>>(null);
+
+  const sortedSegments = getSortedSegments(activeRouteSegment, isMobileDevice);
 
   useEffect(() => {
     if (displayIntroHint.asToast) {
-      toast.show(navigationConfig.intro.text);
+      toast.show(config.intro.text);
     }
   }, [activeRouteSegment, displayIntroHint.asToast])
 
@@ -40,22 +56,22 @@ export const NavigationPanels = ({
     setExpandedPanel((prev) => (prev === segment ? null : segment));
   };
 
-  useOnClickOutside(navBoxRef as RefObject<HTMLDivElement>, (e) => {
+  useOnClickOutside(navRef as RefObject<HTMLDivElement>, (e) => {
     if(!!expandedPanel) {
       setExpandedPanel(null)
     }
   });
 
   return (
-    <div ref={navBoxRef} id="nav-wrap" className="relative">
+    <div ref={navRef} id="nav-wrap" className="relative">
       <nav id="nav-root">
-        <ul id="nav-list" className="flex flex-col">
-          <For each={Object.keys(navigationConfig.panels) as RZ_SEGMENTS[]}>
+        <ul id="nav-list" data-testid="nav-list" className="flex flex-col">
+          <For each={sortedSegments}>
             {(segment) => {
-              const panel = navigationConfig.panels[segment];
+              const panel = config.panels[segment];
               const isSelected = activeRouteSegment === segment
-              return (
-                <li id="nav-panel" key={segment} className="order-1 [&:has([data-selected=true])]:order-0">
+              return (                
+              <li id="nav-panel" data-segment={segment} key={segment}>
                   {isSelected ? (
                     <SelectedNavigationPanel
                       isSelected={isSelected}
@@ -76,7 +92,7 @@ export const NavigationPanels = ({
         </ul>
       </nav>
       {displayIntroHint.asComponent && (
-        <NavIntroHintDisplay text={navigationConfig.intro.text} />
+        <NavIntroHintDisplay text={config.intro.text} />
       )}
     </div>
   );

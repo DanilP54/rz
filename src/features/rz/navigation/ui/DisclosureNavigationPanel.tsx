@@ -12,22 +12,22 @@ export function DisclosureNavigationPanel({
   panel: TPanel;
   onToggle: () => void;
 }) {
-  const bgColorPanel = getColorOfSegment(panel.segment);
+  const bgColorPanel = getColorOfSegment(panel.segmentName);
 
   return (
     <div 
-      data-testid={`disc-panel-${panel.segment}`}
+      data-testid={`disc-panel-${panel.segmentName}`}
       className="group relative h-[40px]">
       <button
-        data-testid={`disc-trigger-${panel.segment}`}
+        data-testid={`disc-trigger-${panel.segmentName}`}
         type="button"
         aria-expanded={isExpanded}
-        aria-controls={`nav-dropdown-menu-${panel.segment}`}
+        aria-controls={`nav-dropdown-menu-${panel.segmentName}`}
         onClick={onToggle}
         className={`w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${bgColorPanel}`}
       ></button>
       <ul
-        data-testid={`disc-link-list-${panel.segment}`}
+        data-testid={`disc-link-list-${panel.segmentName}`}
         className={`${isExpanded ? "flex" : "hidden"} ${bgColorPanel} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl`}
       >
         <For each={panel.links}>

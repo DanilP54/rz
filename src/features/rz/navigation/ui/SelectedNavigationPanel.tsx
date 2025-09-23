@@ -19,14 +19,12 @@ export function SelectedNavigationPanel({
 
   const toast = toastHintManager();
   const storage = useHintsStorage()
-
-
-  const bgColorPanel = getColorOfSegment(panel.segment);
+  const backgroundColor = getColorOfSegment(panel.segmentName);
 
   useEffect(() => {
-    if (storage.isSeen(panel.segment)) return;
+    if (storage.isSeen(panel.segmentName)) return;
     let id = toast.show(panel.hintText)
-    storage.save(panel.segment)
+    storage.save(panel.segmentName)
     return () => {
       if (id) toast.hide(id)
     };
@@ -34,12 +32,12 @@ export function SelectedNavigationPanel({
 
   return (
     <div
-      data-testid={`slc-panel-${panel.segment}`}
+      data-testid={`slc-panel-${panel.segmentName}`}
       data-selected="true"
       className="group relative h-[40px]"
     >
       <ul
-        className={`${bgColorPanel} flex items-center justify-between gap-1 text-white font-bold w-full h-full border`}
+        className={`${backgroundColor} flex items-center justify-between gap-1 text-white font-bold w-full h-full border`}
       >
         <For each={panel.links}>
           {(link) => {
