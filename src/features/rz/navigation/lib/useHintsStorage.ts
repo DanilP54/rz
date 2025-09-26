@@ -1,24 +1,27 @@
 import { useLocalStorage } from "usehooks-ts";
-import {RZ_SEGMENTS} from "@/shared/model/routes";
+import {NavSegments} from "@/shared/model/routes";
 
-export type NavigationHints = RZ_SEGMENTS | "intro";
+
+export type NavigationHintIntroKey = "intro";
+export type NavigationHintSegmentKey = NavSegments;
+export type NavigationHintKey = NavigationHintSegmentKey | NavigationHintIntroKey;
 
 export interface HintsStorage {
   isEmpty(): boolean,
-  save(hint: NavigationHints): void,
-  isSeen(hint: NavigationHints): boolean,
+  save(hint: NavigationHintKey): void,
+  isSeen(hint: NavigationHintKey): boolean,
 }
 
 export const STORAGE_KEY = 'seenHint'
 
 export const useHintsStorage = (): HintsStorage => {
-  const [seenHint, setSeenHint] = useLocalStorage<NavigationHints[]>(STORAGE_KEY, []);
+  const [seenHint, setSeenHint] = useLocalStorage<NavigationHintKey[]>(STORAGE_KEY, []);
 
-  const isSeen = (hint: NavigationHints) => {
+  const isSeen = (hint: NavigationHintKey) => {
     return seenHint.includes(hint);
   };
 
-  const save = (hint: NavigationHints) => {
+  const save = (hint: NavigationHintKey) => {
     setSeenHint((prev) => [...prev, hint]);
   };
 

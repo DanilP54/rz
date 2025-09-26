@@ -1,9 +1,9 @@
 import {useEffect, useRef, useState} from "react";
 import {useHintsStorage} from "@/features/rz/navigation/lib/useHintsStorage";
-import {RZ_SEGMENTS} from "@/shared/model/routes";
+import {NavSegments} from "@/shared/model/routes";
 
 export const useIntroHintDisplay = (
-    activeRouteSegment: Nullable<RZ_SEGMENTS>,
+    activeRouteSegment: Nullable<NavSegments>,
     isMobile: boolean
 ) => {
     const [showComponent, setShowComponent] = useState(false);

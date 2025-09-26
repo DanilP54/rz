@@ -5,7 +5,6 @@ import { Panel as TPanel } from "../types";
 import { For } from "@/shared/For";
 import { toastHintManager } from "../lib/toastHintManager";
 import { useHintsStorage } from "../lib/useHintsStorage";
-import { BlockList } from "net";
 
 export function SelectedNavigationPanel({
   panel,

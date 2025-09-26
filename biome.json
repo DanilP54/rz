@@ -9,11 +9,11 @@
 		"ignoreUnknown": false
 	},
 	"formatter": {
-		"enabled": true,
+		"enabled": false,
 		"indentStyle": "tab"
 	},
 	"linter": {
-		"enabled": true,
+		"enabled": false,
 		"rules": {
 			"recommended": false
 		}
@@ -24,7 +24,7 @@
 		}
 	},
 	"assist": {
-		"enabled": true,
+		"enabled": false,
 		"actions": {
 			"source": {
 				"organizeImports": "on"

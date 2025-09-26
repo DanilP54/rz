@@ -1,23 +1,22 @@
 import { Filters } from "@/features/rz/filters/Filters";
+import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 import Link from "next/link";
-import { ContentCategory, RZ_SEGMENTS } from "@/shared/model/routes";
 
 type Params = {
-  segment: RZ_SEGMENTS
-  category: ContentCategory
-}
+  segment: NavSegments;
+  category: SegmentCategory<NavSegments>;
+};
 
 type PageProps = {
-  params: Promise<Params>,
-}
+  params: Promise<Params>;
+};
 
 export default async function Page({ params }: PageProps) {
-
   const { segment, category } = await params;
 
   return (
     <div
-      id={'page'}
+      id={"page"}
       data-segment={segment}
       data-hassegment={String(Boolean(segment))}
     >
