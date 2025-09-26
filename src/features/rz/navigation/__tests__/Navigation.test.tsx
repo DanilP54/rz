@@ -8,7 +8,6 @@ import { DisclosureNavPanelTestObject } from "./utils/DisclosureNavPanelTestObje
 import { SelectedNavPanelTestObject } from "./utils/SelectedNavPanelTestObject";
 import { getStoredHints, setStoredHints } from "./utils/localStorage";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
-import { wait } from "@testing-library/user-event/dist/cjs/utils/index.js";
 import { waitFor } from "@testing-library/dom";
 
 vi.mock("next/navigation", () => ({
@@ -43,8 +42,8 @@ describe("NavigationPanels", () => {
 
   const ALL_NAVIGATION_SEGMENTS = Object.keys(config.panels) as NavSegments[];
   const PANEL = config.panels.intellect;
+  const INTRO_HINT_KEY = 'intro'
   const NAV_HINTS_OBJECT = new NavHintsTestObject(config.intro.text);
-
 
   describe("DisclosureNavigationPanel behavior", () => {
 
@@ -67,134 +66,123 @@ describe("NavigationPanels", () => {
       await disclosurePanel.clickOutside();
       expect(disclosurePanel.isCollapsed()).toBe(true);
     });
+
+    it("рендеряться правильное количество ссылок", async () => {
+      const disclosurePanel = new DisclosureNavPanelTestObject(PANEL.segmentName);
+      expect(disclosurePanel.countNumberOfLinks()).toEqual(PANEL.links.length)
+    });
   })
 
-  describe("SelectedNavigationPanel behavior", () => {
-
-
-    it("should render SelectedNavPanel for the active route segment, all other segments should render as collapsed DisclosureNavigationPanel", async () => {
+  describe("First visit behavior", () => {
+    it("Захожу на INDEX ROUTE, все панели закрыты, local storage пустой, отображается nav hint", async () => {
+      routeToIndex()
+      renderComponent(<Navigation isMobileDevice />)
       
-      const currentPathname = routeTo(PANEL.segmentName, 'music');
-      renderComponent(<Navigation isMobileDevice />);
+      ALL_NAVIGATION_SEGMENTS.forEach((segmentName) => {
+        const discPanel = new DisclosureNavPanelTestObject(segmentName)
+        expect(discPanel.isCollapsed()).toBe(true)
+      })
+      
+      await waitFor(() => {
+        expect(NAV_HINTS_OBJECT.checkIntroHintText()).toBeInTheDocument()
+      })
 
-      const selectedPanel = new SelectedNavPanelTestObject(PANEL.segmentName);
+      expect(getStoredHints()).toEqual([])
+    
+    })
 
-      expect(selectedPanel.isSelected()).toBe(true);
+    it("Захожу на SEGMENT ROUTE, отображается selected panel, она наверху списка, остальные панели закрыты, nav hint отображается, local storage пустой, остальные панели в свернутом состоянии, into hint не отображается, активная ссылка соответствует пути, активная ссылка в начале списка", async () => {
+      
+      const TEST_SEGMENT = PANEL.segmentName
+      const PANEL_HINT_TEXT = PANEL.hintText
+
+      const pathname = routeTo(TEST_SEGMENT, 'books')
+      
+      renderComponent(<Navigation  isMobileDevice />)
+
+      const selectedPanel = new SelectedNavPanelTestObject(TEST_SEGMENT)
+
+      expect(selectedPanel.isSelected()).toBe(true)
+      expect(selectedPanel.isTopInList()).toBe(true)
+      expect(selectedPanel.activeLink(pathname)).toBe(true)
+      expect(selectedPanel.activeLinkIsFirstInList()).toBe(true)
+      expect(selectedPanel.countNumberOfLinks()).toEqual(PANEL.links.length)
 
       ALL_NAVIGATION_SEGMENTS.forEach((segment) => {
-        if (segment !== PANEL.segmentName) {
-          const { segmentName } = config.panels[segment];
-          const otherDisclosurePanel = new DisclosureNavPanelTestObject(
-            segmentName
-          );
-          expect(otherDisclosurePanel.isCollapsed()).toBe(true);
+        if(segment !== TEST_SEGMENT) {
+          const otherDiscPanel = new DisclosureNavPanelTestObject(segment)
+          expect(otherDiscPanel.isCollapsed()).toBe(true)
         }
-      })
-
-      expect(selectedPanel.isTopInList()).toBe(true);
-      expect(selectedPanel.activeLink(currentPathname)).toBe(true);
-      expect(selectedPanel.countNumberOfLinks()).toBe(PANEL.links.length);
+      })  
 
       await waitFor(() => {
-        expect(NAV_HINTS_OBJECT.checkText(PANEL.hintText)).toBeInTheDocument();
+        expect(NAV_HINTS_OBJECT.checkIntroHintText()).not.toBeInTheDocument()
+        expect(NAV_HINTS_OBJECT.checkText(PANEL_HINT_TEXT)).toBeInTheDocument()
       })
 
-      expect(getStoredHints()).toEqual([PANEL.segmentName]);
+      expect(getStoredHints()).toEqual([TEST_SEGMENT])    
+    })
 
-
+    it("intro hint записывается в storage только когда пользователь посещал segment route и был на index route", async () => {
+      
+      const TEST_SEGMENT = PANEL.segmentName
+    
+      
+      routeToIndex() 
+      const tree = renderComponent(<Navigation isMobileDevice />)
+      routeTo(TEST_SEGMENT, 'movies')
+      tree.rerender(<Navigation isMobileDevice />)
+      expect(getStoredHints()).toEqual([TEST_SEGMENT, INTRO_HINT_KEY])
     })
   })
 
-  // describe("First visit behavior", () => {
+
+  describe("Repeat visit behavior", () => {
 
 
+    it("При посещении сегмента, подсказка не отображается, так как сторэдж содержит запись о посещении", async () => {
+      const TEST_SEGMENT = PANEL.segmentName
+      const PANEL_HINT_TEXT = PANEL.hintText
+      setStoredHints([TEST_SEGMENT])
+      
+      routeTo(TEST_SEGMENT, 'movies')
 
-  //   it("should render all panels collapsed, display intro hint, and have empty storage", async () => {
-  //     routeToIndex();
-  //     renderComponent(<Navigation isMobileDevice />);
+      renderComponent(<Navigation isMobileDevice />)
+      
+      await waitFor(() => {
+        expect(NAV_HINTS_OBJECT.checkText(PANEL_HINT_TEXT)).not.toBeInTheDocument()
+      })
 
-  //     for (const segment of allNavigationSegments) {
-  //       const { segmentName } = config.panels[segment];
-  //       const panel = new DisclosureNavPanelTestObject(segmentName);
-  //       expect(panel.isCollapsed()).toBe(true);
-  //     }
+    })
 
-  //     await waitFor(() => {
-  //       expect(navHints.checkIntroHintText()).toBeInTheDocument();
-  //     });
-  //     expect(getStoredHints()).toEqual([]);
-  //   });
+    it("intro hint не отображается, так как storage содержит запись об посещении", async () => {
+      setStoredHints([INTRO_HINT_KEY])
+      routeToIndex()
+      renderComponent(<Navigation isMobileDevice />)
+      
+      await waitFor(() => {
+        expect(NAV_HINTS_OBJECT.checkIntroHintText()).not.toBeInTheDocument()
+      })
+    })
+  })
 
-  //   it("should render selected panel when navigating to segment route, collapsed others panels, display panel hint, and update storage with hint visibility", async () => {
-  //     const pathname = routeTo(panel.segmentName, "music");
-  //     renderComponent(<Navigation isMobileDevice />);
 
-  //     const selectedPanel = new SelectedNavPanelTestObject(panel.segmentName);
-  //     expect(selectedPanel.isTopInList()).toBe(true);
-  //     expect(selectedPanel.activeLink(pathname)).toBe(true);
+  
+  it("при открытой disc panels когда перехожу по ссылкам на SelectedPanel, Disc должна свернуться", async () => {
+    routeTo(PANEL.segmentName, 'music')
+    const tree = renderComponent(<Navigation  isMobileDevice/>)
+    const selectedPanel = new SelectedNavPanelTestObject(PANEL.segmentName)
+    const discPanel = new DisclosureNavPanelTestObject(config.panels.instincts.segmentName)
 
-  //     for (const value of allNavigationSegments) {
-  //       if (value !== panel.segmentName) {
-  //         const { segmentName } = config.panels[value];
-  //         const otherDisclosurePanel = new DisclosureNavPanelTestObject(
-  //           segmentName
-  //         );
-  //         expect(otherDisclosurePanel.isCollapsed()).toBe(true);
-  //       }
-  //     }
+    await discPanel.clickTrigger()
+    expect(discPanel.isExpanded()).toBe(true)
 
-  //     await waitFor(() => {
-  //       expect(navHints.checkPanelHintText()).toBeInTheDocument();
-  //     });
+    selectedPanel.selectCategory('books')
 
-  //     expect(getStoredHints()).toEqual([panel.segmentName]);
-  //   });
+    routeTo(PANEL.segmentName, 'books')
 
-  //   it("интро подсказка не должна отображаться как компонент, когда выбран один из сегментов в роуте", async () => {
-  //     routeToIndex();
-  //     const tree = renderComponent(<Navigation isMobileDevice />);
+    tree.rerender(<Navigation isMobileDevice />)
 
-  //     await waitFor(() => {
-  //       expect(navHints.checkIntroHintText()).toBeInTheDocument();
-  //     });
-
-  //     routeTo(panel.segmentName, "music");
-  //     tree.rerender(<Navigation isMobileDevice />);
-
-  //     await waitFor(() => {
-  //       expect(navHints.checkIntroHintText()).not.toBeInTheDocument();
-  //     });
-  //   });
-
-  //   it("into hint as component not shuould when is route has segment 2", async () => {
-  //     routeTo(panel.segmentName, "music");
-  //     const tree = renderComponent(<Navigation isMobileDevice />);
-
-  //     await waitFor(() => {
-  //       expect(navHints.checkIntroHintText()).not.toBeInTheDocument();
-  //     });
-  //   });
-  // });
-
-  // // если intro был виден и пользователь был на каком-либо сегменте
-
-  // describe("Repeat visit behavior", () => {
-  //   it("should not show segment hint if already displayed, and show intro hint when returning to index", async () => {
-  //     setStoredHints([panel.segmentName]);
-  //     routeTo(panel.segmentName, "music");
-  //     const tree = renderComponent(<Navigation isMobileDevice />);
-
-  //     expect(navHints.checkPanelHintText()).not.toBeInTheDocument();
-  //     expect(getStoredHints()).toEqual([panel.segmentName]);
-
-  //     routeToIndex();
-  //     tree.rerender(<Navigation isMobileDevice />);
-  //     expect(navHints.checkIntroHintText()).toBeInTheDocument();
-
-  //     routeTo(panel.segmentName, "music");
-
-  //     tree.rerender(<Navigation isMobileDevice />);
-  //     expect(getStoredHints()).toEqual([panel.segmentName, "intro"]);
-  //   });
-  // });
+    expect(discPanel.isCollapsed()).toBe(true)
+  })
 });

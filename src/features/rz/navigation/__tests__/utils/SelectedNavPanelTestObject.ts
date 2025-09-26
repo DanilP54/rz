@@ -1,5 +1,6 @@
-import { NavSegments } from "@/shared/model/routes";
+import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 import { screen } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
 
 
 export class SelectedNavPanelTestObject {
@@ -28,9 +29,27 @@ export class SelectedNavPanelTestObject {
           link.getAttribute("data-active") === "true"
       );
     }
-
+    
+    activeLinkIsFirstInList() {
+      return this.getPanel().querySelectorAll("a")[0].getAttribute('data-active') === 'true'
+    }
     
     countNumberOfLinks() {
       return this.getPanel().querySelectorAll("a").length;
+    }
+
+    async selectCategory(category: SegmentCategory<typeof this.segment>) {
+    const allLinks = Array.from(
+      this.getPanel().querySelectorAll("a")
+    );
+    const target = allLinks.find((anchor) => {
+      const dataLabel = anchor.getAttribute("data-label");
+      const text = anchor.textContent?.trim();
+      return dataLabel === category || text === category;
+    });
+    
+    if (target) {
+      await userEvent.setup().click(target);
+    }
     }
   }

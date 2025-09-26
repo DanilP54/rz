@@ -1,10 +1,23 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
 import { useEffect } from "react";
-import { Panel as TPanel } from "../types";
+import { NavLink, Panel as TPanel } from "../types";
 import { For } from "@/shared/For";
 import { toastHintManager } from "../lib/toastHintManager";
 import { useHintsStorage } from "../lib/useHintsStorage";
+
+const getSortedLinks = (
+  links: NavLink[],
+  pathname: string,
+  isMobileDevice: boolean
+): NavLink[] => {
+  if(!isMobileDevice) return links 
+  return [...links].sort((a, b) => {
+    if (a.href === pathname) return -1;
+    if (b.href === pathname) return 1;
+    return 0;
+  });
+};
 
 export function SelectedNavigationPanel({
   panel,
@@ -19,6 +32,8 @@ export function SelectedNavigationPanel({
   const toast = toastHintManager();
   const storage = useHintsStorage()
   const backgroundColor = getColorOfSegment(panel.segmentName);
+
+  const sortedLinks = getSortedLinks(panel.links, currentPath, true)
 
   useEffect(() => {
     if (storage.isSeen(panel.segmentName)) return;
@@ -38,7 +53,7 @@ export function SelectedNavigationPanel({
       <ul
         className={`${backgroundColor} flex items-center justify-between gap-1 text-white font-bold w-full h-full border`}
       >
-        <For each={panel.links}>
+        <For each={sortedLinks}>
           {(link) => {
             const isActive = currentPath.includes(link.href);
             return (
@@ -50,7 +65,7 @@ export function SelectedNavigationPanel({
                   aria-current={isActive ? 'page' : undefined}
                   data-active={isActive}
                   href={link.href}
-                  className="order-1 data-[active=true]:order-0 data-[active=true]:text-black data-[active=true]:pb-[4px]"
+                  className="data-[active=true]:text-black data-[active=true]:pb-[4px]"
                 >
                   {link.label}
                 </Link>
