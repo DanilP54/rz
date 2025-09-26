@@ -3,14 +3,13 @@ import { Navigation } from "@/features/rz/navigation/Navigation";
 import { config } from "../config";
 import { NavSegments, ROUTES, SegmentCategory } from "@/shared/model/routes";
 import { renderComponent } from "@/test-utils";
-
-import { waitFor } from "@testing-library/dom";
 import { NavHintsTestObject } from "./utils/NavHintsTestObject";
 import { DisclosureNavPanelTestObject } from "./utils/DisclosureNavPanelTestObject";
 import { SelectedNavPanelTestObject } from "./utils/SelectedNavPanelTestObject";
 import { getStoredHints, setStoredHints } from "./utils/localStorage";
-
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
+import { wait } from "@testing-library/user-event/dist/cjs/utils/index.js";
+import { waitFor } from "@testing-library/dom";
 
 vi.mock("next/navigation", () => ({
   useSelectedLayoutSegment: vi.fn(),
@@ -34,8 +33,6 @@ export const routeToIndex = () => {
   stubNextPathname.mockReturnValue(ROUTES.rz.root)
 };
 
-
-
 describe("NavigationPanels", () => {
 
   afterEach(() => {
@@ -44,9 +41,9 @@ describe("NavigationPanels", () => {
   });
 
 
-  const allNavigationSegments = Object.keys(config.panels) as NavSegments[];
-  const panel = config.panels.intellect;
-  const navHints = new NavHintsTestObject(config.intro.text, panel.hintText);
+  const ALL_NAVIGATION_SEGMENTS = Object.keys(config.panels) as NavSegments[];
+  const PANEL = config.panels.intellect;
+  const NAV_HINTS_OBJECT = new NavHintsTestObject(config.intro.text);
 
 
   describe("DisclosureNavigationPanel behavior", () => {
@@ -57,7 +54,7 @@ describe("NavigationPanels", () => {
     })
 
     it("toggles on trigger click", async () => {
-      const disclosurePanel = new DisclosureNavPanelTestObject(panel.segmentName);
+      const disclosurePanel = new DisclosureNavPanelTestObject(PANEL.segmentName);
       await disclosurePanel.clickTrigger();
       expect(disclosurePanel.isExpanded()).toBe(true);
       await disclosurePanel.clickTrigger();
@@ -65,7 +62,7 @@ describe("NavigationPanels", () => {
     });
 
     it("closes on outside click", async () => {
-      const disclosurePanel = new DisclosureNavPanelTestObject(panel.segmentName);
+      const disclosurePanel = new DisclosureNavPanelTestObject(PANEL.segmentName);
       await disclosurePanel.clickTrigger();
       await disclosurePanel.clickOutside();
       expect(disclosurePanel.isCollapsed()).toBe(true);
@@ -75,20 +72,17 @@ describe("NavigationPanels", () => {
   describe("SelectedNavigationPanel behavior", () => {
 
 
-    it("should render SelectedNavPanel for the active route segment after opening a DisclosureNavPanel dropdown and navigating via a link, while all other segments should render as collapsed DisclosureNavigationPanel", async () => {
-      const CONTENT_CATEGORY = "music"
-      routeToIndex();
-      const tree = renderComponent(<Navigation isMobileDevice />);
-      const disclosurePanel = new DisclosureNavPanelTestObject(panel.segmentName);
-      await disclosurePanel.clickTrigger();
-      await disclosurePanel.selectCategory(CONTENT_CATEGORY);
-      routeTo(panel.segmentName, CONTENT_CATEGORY);
-      tree.rerender(<Navigation isMobileDevice />);
-      const selectedPanel = new SelectedNavPanelTestObject(panel.segmentName);
+    it("should render SelectedNavPanel for the active route segment, all other segments should render as collapsed DisclosureNavigationPanel", async () => {
+      
+      const currentPathname = routeTo(PANEL.segmentName, 'music');
+      renderComponent(<Navigation isMobileDevice />);
+
+      const selectedPanel = new SelectedNavPanelTestObject(PANEL.segmentName);
+
       expect(selectedPanel.isSelected()).toBe(true);
 
-      allNavigationSegments.forEach((segment) => {
-        if (segment !== panel.segmentName) {
+      ALL_NAVIGATION_SEGMENTS.forEach((segment) => {
+        if (segment !== PANEL.segmentName) {
           const { segmentName } = config.panels[segment];
           const otherDisclosurePanel = new DisclosureNavPanelTestObject(
             segmentName
@@ -96,15 +90,18 @@ describe("NavigationPanels", () => {
           expect(otherDisclosurePanel.isCollapsed()).toBe(true);
         }
       })
-    })
 
-    it("should be top in list< when route segment is active have active link and render all links in panel", async () => { 
-      const currentPathname = routeTo(panel.segmentName, "books");
-      renderComponent(<Navigation isMobileDevice />);
-      const selectedPanel = new SelectedNavPanelTestObject(panel.segmentName);
       expect(selectedPanel.isTopInList()).toBe(true);
       expect(selectedPanel.activeLink(currentPathname)).toBe(true);
-      expect(selectedPanel.countNumberOfLinks()).toBe(panel.links.length);
+      expect(selectedPanel.countNumberOfLinks()).toBe(PANEL.links.length);
+
+      await waitFor(() => {
+        expect(NAV_HINTS_OBJECT.checkText(PANEL.hintText)).toBeInTheDocument();
+      })
+
+      expect(getStoredHints()).toEqual([PANEL.segmentName]);
+
+
     })
   })
 
