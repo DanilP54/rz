@@ -1,23 +1,11 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
 import { useEffect } from "react";
-import { NavLink, Panel as TPanel } from "../types";
+import { Panel as TPanel } from "../types";
 import { For } from "@/shared/For";
 import { toastHintManager } from "../lib/toastHintManager";
 import { useHintsStorage } from "../lib/useHintsStorage";
-
-const getSortedLinks = (
-  links: NavLink[],
-  pathname: string,
-  isMobileDevice: boolean
-): NavLink[] => {
-  if(!isMobileDevice) return links 
-  return [...links].sort((a, b) => {
-    if (a.href === pathname) return -1;
-    if (b.href === pathname) return 1;
-    return 0;
-  });
-};
+import { sortWithActiveItem } from "../lib/sorting";
 
 export function SelectedNavigationPanel({
   panel,
@@ -31,14 +19,27 @@ export function SelectedNavigationPanel({
 
   const toast = toastHintManager();
   const storage = useHintsStorage()
-  const backgroundColor = getColorOfSegment(panel.segmentName);
+  
+  const {segmentName, hintText, links} = panel
+  const backgroundColor = getColorOfSegment(segmentName);
 
-  const sortedLinks = getSortedLinks(panel.links, currentPath, true)
+  const sortedLinks = sortWithActiveItem({
+    items: links,
+    active: {
+      identifier: currentPath,
+      getKey: (link) => link.href
+    },
+    move: {
+      when: true,
+      then: 'start',
+      else: 'keep'
+    }
+  })
 
   useEffect(() => {
-    if (storage.isSeen(panel.segmentName)) return;
-    let id = toast.show(panel.hintText)
-    storage.save(panel.segmentName)
+    if (storage.isSeen(segmentName)) return;
+    let id = toast.show(hintText)
+    storage.save(segmentName)
     return () => {
       if (id) toast.hide(id)
     };
@@ -46,7 +47,7 @@ export function SelectedNavigationPanel({
 
   return (
     <div
-      data-testid={`slc-panel-${panel.segmentName}`}
+      data-testid={`slc-panel-${segmentName}`}
       data-selected="true"
       className="group relative h-[40px]"
     >
@@ -56,13 +57,14 @@ export function SelectedNavigationPanel({
         <For each={sortedLinks}>
           {(link) => {
             const isActive = currentPath.includes(link.href);
+            const ariaCurrentAttr = isActive ? 'page' : undefined
             return (
               <li
                 key={link.href}
                 className="w-full h-full flex items-center justify-center *:data-[active=true]:text-[20px] *:text-[9px]"
               >
                 <Link
-                  aria-current={isActive ? 'page' : undefined}
+                  aria-current={ariaCurrentAttr}
                   data-active={isActive}
                   href={link.href}
                   className="data-[active=true]:text-black data-[active=true]:pb-[4px]"

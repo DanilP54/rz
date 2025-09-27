@@ -1,5 +1,5 @@
 "use client";
-import { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { For } from "@/shared/For";
 import { config } from "./config";
@@ -10,55 +10,56 @@ import { NavIntroHintDisplay } from "@/features/rz/navigation/ui/NavIntroHintDis
 import { useOnClickOutside } from "usehooks-ts";
 import { SelectedNavigationPanel } from "./ui/SelectedNavigationPanel";
 import { DisclosureNavigationPanel } from "./ui/DisclosureNavigationPanel";
-
+import { sortWithActiveItem } from "./lib/sorting";
 
 const segments = Object.keys(config.panels) as NavSegments[];
 
-const getSortedSegments = (
-  activeRouteSegment: Nullable<NavSegments>,
-  isMobileDevice: boolean
-): NavSegments[] => {
-  return [...segments].sort((a, b) => {
-    if (a === activeRouteSegment) return isMobileDevice ? -1 : 1;
-    if (b === activeRouteSegment) return isMobileDevice ? 1 : -1;
-    return 0;
-  });
-};
-
-export const Navigation = ({
-  isMobileDevice,
-}: {
-  isMobileDevice: boolean;
-}) => {
-
-  const activeRouteSegment = useSelectedLayoutSegment() as Nullable<NavSegments>;
+export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
+  const activeRouteSegment =
+    useSelectedLayoutSegment() as Nullable<NavSegments>;
   const pathname = usePathname();
-  const [expandedDiscPanel, setExpandedDiscPanel] = useState<Nullable<NavSegments>>(null);
+  const [expandedDiscPanel, setExpandedDiscPanel] =
+    useState<Nullable<NavSegments>>(null);
   const toast = toastHintManager();
-  const displayIntroHint = useIntroHintDisplay(activeRouteSegment, isMobileDevice);
+  const displayIntroHint = useIntroHintDisplay(
+    activeRouteSegment,
+    isMobileDevice
+  );
+
   const navElementRef = useRef<Nullable<HTMLDivElement>>(null);
 
-  const sortedSegments = getSortedSegments(activeRouteSegment, isMobileDevice);
+  const sortedSegments = sortWithActiveItem({
+    items: segments,
+    active: {
+      identifier: activeRouteSegment,
+      getKey: (segments) => segments,
+    },
+    move: {
+      when: isMobileDevice,
+      then: "start",
+      else: "end",
+    },
+  });
 
   useEffect(() => {
     if (displayIntroHint.asToast) {
       toast.show(config.intro.text);
     }
-  }, [displayIntroHint.asToast])
+  }, [displayIntroHint.asToast]);
 
   useEffect(() => {
     if (!!expandedDiscPanel) {
-      setExpandedDiscPanel(null)
+      setExpandedDiscPanel(null);
     }
-  }, [pathname])
+  }, [pathname]);
 
   const handleToggle = (segment: NavSegments) => {
     setExpandedDiscPanel((prev) => (prev === segment ? null : segment));
   };
 
   useOnClickOutside(navElementRef as RefObject<HTMLDivElement>, (e) => {
-    if(!!expandedDiscPanel) {
-      setExpandedDiscPanel(null)
+    if (!!expandedDiscPanel) {
+      setExpandedDiscPanel(null);
     }
   });
 
@@ -69,9 +70,10 @@ export const Navigation = ({
           <For each={sortedSegments}>
             {(segment) => {
               const panel = config.panels[segment];
-              const isSelected = activeRouteSegment === segment
-              return (                
-              <li id="nav-panel" data-segment={segment} key={segment}>
+              const isSelected = activeRouteSegment === segment;
+              const isExpanded = expandedDiscPanel === segment;
+              return (
+                <li id="nav-panel" data-segment={segment} key={segment}>
                   {isSelected ? (
                     <SelectedNavigationPanel
                       isSelected={isSelected}
@@ -81,7 +83,7 @@ export const Navigation = ({
                   ) : (
                     <DisclosureNavigationPanel
                       panel={panel}
-                      isExpanded={expandedDiscPanel === segment}
+                      isExpanded={isExpanded}
                       onToggle={() => handleToggle(segment)}
                     />
                   )}
