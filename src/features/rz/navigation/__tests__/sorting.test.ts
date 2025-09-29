@@ -11,9 +11,9 @@ describe('sortWithActiveItem', () => {
     const items = ['alpha', 'beta', 'gamma', 'delta']
 
     it('moves active to start when move.then = "start" and condition is true', () => {
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<string>({
         items,
-        active: { identifier: 'gamma', getKey: (s) => s },
+        isActive: (s: string) => s === 'gamma',
         move: { when: true, then: 'start', else: 'end' },
       })
 
@@ -22,9 +22,9 @@ describe('sortWithActiveItem', () => {
     })
 
     it('moves active to end when move.then = "end" and condition is true', () => {
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<string>({
         items,
-        active: { identifier: 'beta', getKey: (s) => s },
+        isActive: (s: string) => s === 'beta',
         move: { when: true, then: 'end', else: 'start' },
       })
 
@@ -33,9 +33,9 @@ describe('sortWithActiveItem', () => {
     })
 
     it('keeps order when finalPosition = "keep"', () => {
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<string>({
         items,
-        active: { identifier: 'beta', getKey: (s) => s },
+        isActive: (s: string) => s === 'beta',
         move: { when: true, then: 'keep', else: 'start' },
       })
 
@@ -44,24 +44,21 @@ describe('sortWithActiveItem', () => {
       expect(result).not.toBe(items)
     })
 
-    it('keeps order when active.identifier is null/undefined/empty', () => {
-      const cases = [null, undefined]
-      for (const id of cases) {
-        const result = sortWithActiveItem({
-          items,
-          active: { identifier: id as any, getKey: (s) => s },
-          move: { when: true, then: 'start', else: 'end' },
-        })
-        expect(result).toEqual(items)
-        expect(result).not.toBe(items)
-      }
+    it('keeps order when predicate never matches any item', () => {
+      const result = sortWithActiveItem<string>({
+        items,
+        isActive: () => false,
+        move: { when: true, then: 'start', else: 'end' },
+      })
+      expect(result).toEqual(items)
+      expect(result).not.toBe(items)
     })
 
     it('returns a new array and does not mutate input', () => {
       const original = [...items]
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<string>({
         items,
-        active: { identifier: 'alpha', getKey: (s) => s },
+        isActive: (s: string) => s === 'alpha',
         move: { when: true, then: 'end', else: 'start' },
       })
       expect(items).toEqual(original) // input unchanged
@@ -69,9 +66,9 @@ describe('sortWithActiveItem', () => {
     })
 
     it('no-op (copy) if identifier does not match any item', () => {
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<string>({
         items,
-        active: { identifier: 'unknown', getKey: (s) => s },
+        isActive: (s: string) => s === 'unknown',
         move: { when: true, then: 'start', else: 'end' },
       })
       expect(result).toEqual(items)
@@ -88,9 +85,9 @@ describe('sortWithActiveItem', () => {
 
     it('moves active link to start (like in SelectedNavigationPanel)', () => {
       const currentPath = '/b'
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<Link>({
         items: links,
-        active: { identifier: currentPath, getKey: (l) => l.href },
+        isActive: (l: Link) => l.href === currentPath,
         move: { when: true, then: 'start', else: 'keep' },
       })
 
@@ -100,9 +97,9 @@ describe('sortWithActiveItem', () => {
 
     it('moves active link to end when configured so', () => {
       const currentPath = '/a'
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<Link>({
         items: links,
-        active: { identifier: currentPath, getKey: (l) => l.href },
+        isActive: (l: Link) => l.href === currentPath,
         move: { when: true, then: 'end', else: 'keep' },
       })
 
@@ -111,9 +108,9 @@ describe('sortWithActiveItem', () => {
     })
 
     it('keeps order when condition is false and else = keep', () => {
-      const result = sortWithActiveItem({
+      const result = sortWithActiveItem<Link>({
         items: links,
-        active: { identifier: '/c', getKey: (l) => l.href },
+        isActive: (l: Link) => l.href === '/c',
         move: { when: false, then: 'start', else: 'keep' },
       })
 

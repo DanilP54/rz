@@ -6,35 +6,26 @@ type SortPosition = "start" | "end" | "keep";
  * Вспомогательная фабрика для создания функции-компаратора. Остается без изменений.
  */
 const createActiveItemComparator = <T>(
-  getKey: (item: T) => string,
-  identifier: string,
+  isActive: (item: T) => boolean,
   position: "start" | "end"
 ) => {
   return (a: T, b: T): number => {
-    const keyA = getKey(a);
-    const keyB = getKey(b);
-
     const moveActiveUp = position === "start" ? -1 : 1;
     const moveActiveDown = -moveActiveUp;
 
-    if (keyA === identifier) return moveActiveUp;
-    if (keyB === identifier) return moveActiveDown;
+    if (isActive(a)) return moveActiveUp;
+    if (isActive(b)) return moveActiveDown;
 
     return 0;
   };
 };
 
-// Новый, более понятный интерфейс
+// Новый, более понятный интерфейс (упрощенный API)
 interface SortWithActiveItemOptions<T> {
   /** Массив, который нужно отсортировать. */
   items: T[];
-  /** Описание того, как найти активный элемент. */
-  active: {
-    /** Уникальное значение (ID, href, и т.д.), которое мы ищем. */
-    identifier: string | null | undefined;
-    /** Функция, которая извлекает ключ из элемента массива для сравнения с `identifier`. */
-    getKey: (item: T) => string;
-  };
+  /** Предикат, который возвращает true для активного элемента. */
+  isActive: (item: T) => boolean;
   /** Правила перемещения найденного активного элемента. */
   move: {
     /** Условие, которое определяет, какую стратегию перемещения использовать. */
@@ -55,20 +46,16 @@ interface SortWithActiveItemOptions<T> {
  */
 export const sortWithActiveItem = <T>({
   items,
-  active,
+  isActive,
   move,
 }: SortWithActiveItemOptions<T>): T[] => {
   const finalPosition = move.when ? move.then : move.else;
 
-  if (finalPosition === "keep" || !active.identifier) {
+  if (finalPosition === "keep") {
     return [...items];
   }
 
-  const comparator = createActiveItemComparator(
-    active.getKey,
-    active.identifier,
-    finalPosition
-  );
+  const comparator = createActiveItemComparator(isActive, finalPosition);
 
   return [...items].sort(comparator);
 };
