@@ -52,7 +52,6 @@ interface NavigationPanelsProps {
   isMobileDevice: boolean;
 }
 
-
 function NavigationPanels(props: NavigationPanelsProps) {
 
   const { config, currentPathname, selectedRouteSegment, isMobileDevice } = props;
