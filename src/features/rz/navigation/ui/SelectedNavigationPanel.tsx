@@ -1,10 +1,7 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { useEffect } from "react";
 import { Panel as TPanel } from "../types";
 import { For } from "@/shared/For";
-import { toastHintManager } from "../lib/toastHintManager";
-import { useHintsStorage } from "../lib/useHintsStorage";
 import { sortWithActiveItem } from "../lib/sorting";
 
 export function SelectedNavigationPanel({
@@ -17,10 +14,7 @@ export function SelectedNavigationPanel({
   currentPath: string;
 }) {
 
-  const toast = toastHintManager();
-  const storage = useHintsStorage()
-  
-  const {segmentName, hintText, links} = panel
+  const {segmentName, links} = panel
   const backgroundColor = getColorOfSegment(segmentName);
 
   const sortedLinks = sortWithActiveItem({
@@ -36,14 +30,6 @@ export function SelectedNavigationPanel({
     }
   })
 
-  // useEffect(() => {
-  //   if (storage.isSeen(segmentName)) return;
-  //   let id = toast.show(hintText)
-  //   storage.save(segmentName)
-  //   return () => {
-  //     if (id) toast.hide(id)
-  //   };
-  // }, []);
 
   return (
     <div

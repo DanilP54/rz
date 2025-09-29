@@ -18,7 +18,7 @@ export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
   
   const selectedRouteSegment = useSelectedLayoutSegment() as Nullable<NavSegments>;
   const pathname = usePathname();
-  const storage = useHintsStorage()
+
   const toast = toastHintManager();
   const displayIntroHint = useIntroHintDisplay(
     selectedRouteSegment,
@@ -30,18 +30,6 @@ export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
       toast.show(config.intro.text);
     }
   }, [displayIntroHint.asToast]);
-
-  useEffect(() => {
-    if(!selectedRouteSegment || storage.isSeen(selectedRouteSegment)) return;
-    const panel = config.panels[selectedRouteSegment]
-    const id = toast.show(panel.hintText)
-    storage.save(selectedRouteSegment)
-
-    return () => {
-      if (id) toast.hide(id)
-    }
-    
-  }, [selectedRouteSegment])
 
   return (
     <div  id="nav-wrap" className="relative">
@@ -72,6 +60,9 @@ function NavigationPanels(props: NavigationPanelsProps) {
   const [expandedDiscPanel, setExpandedDiscPanel] =
     useState<Nullable<NavSegments>>(null);
   const segments = Object.keys(props.config.panels) as NavSegments[];
+  
+  const storage = useHintsStorage()
+  const toast = toastHintManager();
   const navElementRef = useRef<Nullable<HTMLDivElement>>(null);
 
   const sortedSegments = sortWithActiveItem({
@@ -86,6 +77,18 @@ function NavigationPanels(props: NavigationPanelsProps) {
       else: "end",
     },
   });
+
+  useEffect(() => {
+    if(!selectedRouteSegment || storage.isSeen(selectedRouteSegment)) return;
+    const panel = config.panels[selectedRouteSegment]
+    const id = toast.show(panel.hintText)
+    storage.save(selectedRouteSegment)
+
+    return () => {
+      if (id) toast.hide(id)
+    }
+    
+  }, [selectedRouteSegment])
 
   useEffect(() => setExpandedDiscPanel(null), [currentPathname])
 

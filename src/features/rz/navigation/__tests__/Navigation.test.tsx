@@ -162,7 +162,8 @@ describe("Navigation Component", () => {
       // Test 2: Navigate to a segment, both segment and intro key are stored
       simulateRouteChange(TEST_SEGMENT, 'movies');
       rerender(<Navigation isMobileDevice />);
-      expect(getStoredHints()).toEqual([INTRO_HINT_STORAGE_KEY, TEST_SEGMENT]);
+      expect(getStoredHints()).toEqual(expect.arrayContaining([INTRO_HINT_STORAGE_KEY, TEST_SEGMENT]));
+      expect(getStoredHints()).toHaveLength(2);
     });
   });
 
