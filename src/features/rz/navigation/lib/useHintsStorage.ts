@@ -6,13 +6,13 @@ export type NavigationHintIntroKey = "intro";
 export type NavigationHintSegmentKey = NavSegments;
 export type NavigationHintKey = NavigationHintSegmentKey | NavigationHintIntroKey;
 
+export const STORAGE_KEY = 'seenHint'
+
 export interface HintsStorage {
   isEmpty(): boolean,
   save(hint: NavigationHintKey): void,
   isSeen(hint: NavigationHintKey): boolean,
 }
-
-export const STORAGE_KEY = 'seenHint'
 
 export const useHintsStorage = (): HintsStorage => {
   const [seenHint, setSeenHint] = useLocalStorage<NavigationHintKey[]>(STORAGE_KEY, []);
