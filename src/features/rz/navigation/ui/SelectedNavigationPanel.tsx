@@ -36,14 +36,14 @@ export function SelectedNavigationPanel({
     }
   })
 
-  useEffect(() => {
-    if (storage.isSeen(segmentName)) return;
-    let id = toast.show(hintText)
-    storage.save(segmentName)
-    return () => {
-      if (id) toast.hide(id)
-    };
-  }, []);
+  // useEffect(() => {
+  //   if (storage.isSeen(segmentName)) return;
+  //   let id = toast.show(hintText)
+  //   storage.save(segmentName)
+  //   return () => {
+  //     if (id) toast.hide(id)
+  //   };
+  // }, []);
 
   return (
     <div
