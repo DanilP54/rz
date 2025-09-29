@@ -26,6 +26,7 @@ export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
   );
 
   useEffect(() => {
+    // отвечает за отображение интро-подсказки в toast
     if (displayIntroHint.asToast) {
       toast.show(config.intro.text);
     }
@@ -79,6 +80,7 @@ function NavigationPanels(props: NavigationPanelsProps) {
   });
 
   useEffect(() => {
+    // отвечает за отображение навигационных подсказок для панелей
     if(!selectedRouteSegment || storage.isSeen(selectedRouteSegment)) return;
     const panel = config.panels[selectedRouteSegment]
     const id = toast.show(panel.hintText)
