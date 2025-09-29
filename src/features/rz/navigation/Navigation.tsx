@@ -57,10 +57,10 @@ function NavigationPanels(props: NavigationPanelsProps) {
   const { config, currentPathname, selectedRouteSegment, isMobileDevice } = props;
 
   const [expandedDiscPanel, setExpandedDiscPanel] =
-    useState<Nullable<NavSegments>>(null);
+    useState<NavSegments | null>(null);
   const storage = useHintsStorage()
   const toast = toastHintManager();
-  const navElementRef = useRef<Nullable<HTMLDivElement>>(null);
+  const navElementRef = useRef<HTMLDivElement | null>(null);
   const segments = Object.keys(config.panels) as NavSegments[];
 
   const sortedSegments = sortWithActiveItem<NavSegments>({
