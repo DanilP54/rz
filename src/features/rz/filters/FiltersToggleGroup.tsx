@@ -2,6 +2,7 @@ import { For } from "@/shared/For";
 import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/toggle-group";
 import { Options } from ".";
 import { cn } from "@/shared/lib/utils";
+import { NavSegments } from "@/shared/model/routes";
 
 type Props = {
   filterGroups: Options[][]
@@ -51,7 +52,7 @@ export const FiltersGroupContainer = ({
   children,
   ...props
 }: {
-  variant?: ThematicSegments
+  variant?: NavSegments
   width?: string
   children: React.ReactNode
 } & React.ComponentProps<'div'>) => {
