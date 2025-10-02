@@ -15,7 +15,7 @@ import { NavigationConfig } from "./types";
 import { useHintsStorage } from "./lib/useHintsStorage";
 
 export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
-  
+
   const selectedRouteSegment = useSelectedLayoutSegment() as Nullable<NavSegments>;
   const pathname = usePathname();
 
@@ -61,6 +61,7 @@ function NavigationPanels(props: NavigationPanelsProps) {
   const storage = useHintsStorage()
   const toast = toastHintManager();
   const navElementRef = useRef<HTMLDivElement | null>(null);
+  
   const segments = Object.keys(config.panels) as NavSegments[];
 
   const sortedSegments = sortWithActiveItem<NavSegments>({

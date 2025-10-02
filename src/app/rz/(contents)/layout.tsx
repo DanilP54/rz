@@ -7,7 +7,6 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <div
       className=" 

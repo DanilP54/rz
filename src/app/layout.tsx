@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
-import { NuqsAdapter } from "nuqs/adapters/next";
-import { Toaster } from "sonner";
+import { AppProviders } from "./app-providers";
 
 const Arial = localFont({
   src: [
@@ -39,10 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${Arial.className} antialiased`}>
-        <ThemeProvider>
-          <Toaster duration={Infinity} position="top-center" mobileOffset={2} />
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </ThemeProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

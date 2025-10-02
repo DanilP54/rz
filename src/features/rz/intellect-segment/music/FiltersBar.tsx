@@ -1,7 +1,7 @@
 'use client'
 
 import { type FilterOptions, PARAMS, useCategoryParams, useTypeParams } from "@/features/rz/filters";
-import { createArrayFilterGroups } from "@/shared/lib/create-array-filter-groups";
+import { createFilterGroups } from "@/shared/lib/create-array-filter-groups";
 import { FiltersGroupsLayout } from "../../filters/FiltersToggleGroupLayout";
 import { FiltersToggleGroup } from "../../filters/FiltersToggleGroup";
 
@@ -35,8 +35,8 @@ export function IntellectMusicFiltersBar() {
     const [category, updateCategory] = useCategoryParams()
     const [type, updateType] = useTypeParams()
 
-    const categoryFilterGroups = createArrayFilterGroups(options.category)
-    const typeFilterGroups = createArrayFilterGroups(options.type)
+    const categoryFilterGroups = createFilterGroups(options.category)
+    const typeFilterGroups = createFilterGroups(options.type)
 
     return (
         <FiltersGroupsLayout>

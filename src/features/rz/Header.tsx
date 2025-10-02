@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 
 
 export function Header() {
+
   return (
   <header id="header" className={`grid grid-rows-2 sm:grid-rows-1 grid-cols-2 sm:grid-cols-[3fr_150px_min-content] items-center px-2 py-2 gap-2 sm:gap-10`}>
       <div className=" justify-self-start">
