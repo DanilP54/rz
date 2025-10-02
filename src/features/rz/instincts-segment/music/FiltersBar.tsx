@@ -1,7 +1,7 @@
 'use client'
 
 import { type FilterOptions, PARAMS, useCategoryParams, useTypeParams } from "@/features/rz/filters";
-import { createArrayFilterGroups } from "@/shared/lib/create-array-filter-groups";
+import { createFilterGroups } from "@/shared/lib/create-array-filter-groups";
 import { FiltersGroupsLayout } from "../../filters/FiltersToggleGroupLayout";
 import { FiltersToggleGroup } from "../../filters/FiltersToggleGroup";
 
@@ -35,20 +35,21 @@ export function InstinctsMusicFiltersBar() {
     const [category, updateCategory] = useCategoryParams()
     const [type, updateType] = useTypeParams()
 
-    const categoryFilterGroups = createArrayFilterGroups(options.category)
-    const typeFilterGroups = createArrayFilterGroups(options.type)
+    const categoryFilterGroups = createFilterGroups(options.category)
+    const typeFilterGroups = createFilterGroups(options.type)
+
+
+    const onSelectCategory = (value: string) => {
+        if (!value) updateType('')
+        updateCategory(value)
+    }
 
     return (
         <FiltersGroupsLayout>
             <FiltersToggleGroup
                 filterGroups={categoryFilterGroups}
                 selectedValue={category}
-                onSelect={(value) => {
-                    if (!value) {
-                        updateType('')
-                    }
-                    updateCategory(value)
-                }}
+                onSelect={(value) => onSelectCategory(value)}
             />
             {category && <FiltersToggleGroup
                 filterGroups={typeFilterGroups}

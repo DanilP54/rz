@@ -28,10 +28,10 @@ export const config = {
 } as const satisfies NavigationConfig;
 
 function buildPanelLinks(segment: NavSegments): NavLinks {
-  const paths = ROUTES.rz[segment];
+  const categories = ROUTES.rz[segment];
 
-  return Object.entries(paths).map(([categoryName, path]) => ({
+  return Object.entries(categories).map(([category, path]) => ({
     href: path,
-    label: categoryName.toLowerCase(),
+    label: category.toLowerCase(),
   }));
 }
