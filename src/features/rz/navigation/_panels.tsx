@@ -9,14 +9,14 @@ import { useHintsStorage } from "./lib/_use-hints-storage";
 import { SelectedPanel } from "./_selected-panel";
 import { NavigationConfig } from "./types";
 
-interface NavigationPanelsProps {
+interface IPanels {
   config: NavigationConfig;
   currentPathname: string;
   selectedRouteSegment:  Nullable<NavSegments>;
   isMobileDevice: boolean;
 }
 
-export function Panels(props: NavigationPanelsProps) {
+export function Panels(props: IPanels) {
 
     const { config, currentPathname, selectedRouteSegment, isMobileDevice } = props;
   
@@ -70,6 +70,7 @@ export function Panels(props: NavigationPanelsProps) {
                 <li id="nav-panel" data-segment={segment} key={segment}>
                   {isSelected ? (
                     <SelectedPanel
+                      isMobileDevice={isMobileDevice}
                       isSelected={isSelected}
                       currentPath={currentPathname}
                       panel={panel}

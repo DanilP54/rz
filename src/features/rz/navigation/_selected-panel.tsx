@@ -5,15 +5,19 @@ import { For } from "@/shared/For";
 import { sortWithActiveItem } from "./lib/_sort-active-item";
 
 
+interface ISelectedPanel {
+  panel: TPanel;
+  isSelected?: boolean;
+  isMobileDevice: boolean;
+  currentPath: string;
+}
+
 export function SelectedPanel({
   panel,
   isSelected,
+  isMobileDevice = true,
   currentPath,
-}: {
-  panel: TPanel;
-  isSelected?: boolean;
-  currentPath: string;
-}) {
+}: ISelectedPanel) {
 
   const {segmentName, links} = panel
   const backgroundColor = getColorOfSegment(segmentName);
@@ -22,7 +26,7 @@ export function SelectedPanel({
     items: links,
     isActive: (link) => link.href === currentPath,
     move: {
-      when: true,
+      when: isMobileDevice,
       then: 'start',
       else: 'keep'
     }

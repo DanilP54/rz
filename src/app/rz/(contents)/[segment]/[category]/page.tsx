@@ -13,7 +13,7 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { segment, category } = await params;
-
+  
   return (
     <div
       id={"page"}

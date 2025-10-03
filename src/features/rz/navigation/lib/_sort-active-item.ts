@@ -1,9 +1,8 @@
-// src/shared/lib/sorting.ts
 
 type SortPosition = "start" | "end" | "keep";
 
 /**
- * Вспомогательная фабрика для создания функции-компаратора. Остается без изменений.
+ * Вспомогательная фабрика для создания функции-компаратора.
  */
 const createActiveItemComparator = <T>(
   isActive: (item: T) => boolean,
@@ -20,7 +19,6 @@ const createActiveItemComparator = <T>(
   };
 };
 
-// Новый, более понятный интерфейс (упрощенный API)
 interface SortWithActiveItemOptions<T> {
   /** Массив, который нужно отсортировать. */
   items: T[];
