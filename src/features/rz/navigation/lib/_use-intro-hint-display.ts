@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {useHintsStorage} from "@/features/rz/navigation/lib/useHintsStorage";
+import {useHintsStorage} from "@/features/rz/navigation/lib/_use-hints-storage";
 import {NavSegments} from "@/shared/model/routes";
 
 export const useIntroHintDisplay = (

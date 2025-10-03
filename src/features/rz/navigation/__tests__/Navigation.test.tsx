@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Navigation } from "@/features/rz/navigation/Navigation";
-import { config } from "../config";
+import { Navigation } from "../navigation";
+import { config } from "../_config";
 import { NavSegments, ROUTES, SegmentCategory } from "@/shared/model/routes";
 import { renderComponent } from "@/test-utils";
-import { NavHintsTestObject } from "./utils/NavHintsTestObject";
-import { DisclosureNavPanelTestObject } from "./utils/DisclosureNavPanelTestObject";
-import { SelectedNavPanelTestObject } from "./utils/SelectedNavPanelTestObject";
-import { getStoredHints, setStoredHints } from "./utils/localStorage";
+import { NavHintsTestObject } from "./hints-component";
+import { DisclosureNavPanelTestObject } from "./disclosure-panel-component";
+import { SelectedNavPanelTestObject } from "./selected-panel-component";
+import { getStoredHints, setStoredHints } from "./storage-helper";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { waitFor } from "@testing-library/dom";
 
