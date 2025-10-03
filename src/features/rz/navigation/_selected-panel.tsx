@@ -1,11 +1,11 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel, NavLink } from "../types";
+import { Panel as TPanel, NavLink } from "./types";
 import { For } from "@/shared/For";
-import { sortWithActiveItem } from "../lib/sorting";
+import { sortWithActiveItem } from "./lib/_sort-active-item";
 
 
-export function SelectedNavigationPanel({
+export function SelectedPanel({
   panel,
   isSelected,
   currentPath,

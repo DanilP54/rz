@@ -1,9 +1,9 @@
 import { For } from "@/shared/For";
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel } from "../types";
+import { Panel as TPanel } from "./types";
 
-export function DisclosureNavigationPanel({
+export function DisclosurePanel({
   panel,
   isExpanded,
   onToggle,
