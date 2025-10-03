@@ -41,8 +41,8 @@ export function Panels(props: NavigationPanelsProps) {
     useEffect(() => {
       // отвечает за отображение навигационных подсказок для панелей
       if (!selectedRouteSegment || storage.isSeen(selectedRouteSegment)) return;
-      const panel = config.panels[selectedRouteSegment];
-      const id = toast.show(panel.hintText);
+      const {hintText} = config.panels[selectedRouteSegment];
+      const id = toast.show(hintText);
       storage.save(selectedRouteSegment);
   
       return () => {
@@ -52,7 +52,7 @@ export function Panels(props: NavigationPanelsProps) {
   
     useEffect(() => setExpandedDiscPanel(null), [currentPathname])
   
-    const onToggleDiscPanels = (segment: NavSegments) => {
+    const onToggleDiscPanel = (segment: NavSegments) => {
       setExpandedDiscPanel((prev) => (prev === segment ? null : segment));
     }
   
@@ -78,7 +78,7 @@ export function Panels(props: NavigationPanelsProps) {
                     <DisclosurePanel
                       panel={panel}
                       isExpanded={isExpanded}
-                      onToggle={() => onToggleDiscPanels(segment)}
+                      onToggle={() => onToggleDiscPanel(segment)}
                     />
                   )}
                 </li>
