@@ -18,8 +18,8 @@ interface IFiltersBar {
 }
 
 export function FiltersBar({
-  segment,
-  category,
+    segment,
+    category,
   filters,
 }: IFiltersBar) {
 
@@ -30,11 +30,11 @@ export function FiltersBar({
 
   const visibleRule = useVisibleRules(config, {topic: topic ?? undefined, view: view ?? undefined})
 
-  return (
-    <div
-      data-segment={segment}
-      className={`group/filters w-3/4 absolute top-[164px] sm:top-[106px]  right-0 flex`}
-    >
+    return (
+        <div
+            data-segment={segment}
+            className={`group/filters w-3/4 absolute top-[164px] sm:top-[106px]  right-0 flex`}
+        >
       <FiltersGroupsLayout>
         {visibleRule.topic && <FiltersToggleGroup 
           filterGroups={createRowsFilterGroup(filters.topic)} 
@@ -49,8 +49,8 @@ export function FiltersBar({
           offsetRow={visibleRule.topic ? filters.topic.length : 0} 
         />}
       </FiltersGroupsLayout>
-    </div>
-  );
+        </div>
+    );
 }
 
 
