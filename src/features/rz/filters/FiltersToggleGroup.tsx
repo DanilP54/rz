@@ -1,52 +1,51 @@
-import { For } from "@/shared/For";
 import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/toggle-group";
-import { Options } from ".";
 import { cn } from "@/shared/lib/utils";
 import { NavSegments } from "@/shared/model/routes";
+import type { ComponentProps, ReactNode } from "react";
+
+const DEFAULT_OFFSET_ROW = 35
 
 type Props = {
-  filterGroups: Options[][]
-  selectedValue: string
-  onSelect: (value: string) => void
-  indentLeft?: number
+  filterGroups: FilterOptions[][]
+  selectedValue: SearchParamsKeys
+  onSelect: (value: SearchParamsKeys) => void
+  offsetRow?: number
 }
 
 export function FiltersToggleGroup(props: Props) {
   return (
     <ToggleGroup type="single" className="flex flex-wrap justify-center items-center w-full rounded-none">
-      <For each={props.filterGroups}>
-        {(group, index) =>
-          <FiltersGroupContainer style={{ marginLeft: ((props.indentLeft ?? 0) + index) * 35 }} key={index}>
-            <For each={group}>
-              {(filter) => {
-                const isSelected = filter.value === props.selectedValue
-                return <ToggleGroupItem
-                  key={filter.value}
-                  data-state={isSelected ? 'on' : 'off'}
-                  aria-checked={isSelected}
-                  value={filter.value}
-                  className="h-full text-[13px]
-                    data-[state=on]:group-data-[segment=instincts]/filters:bg-instincts/80 
-                    data-[state=on]:group-data-[segment=intellect]/filters:bg-intellect/80 
-                    data-[state=on]:group-data-[segment=balance]/filters:bg-balance/80 
-                  cursor-pointer"
-                  onClick={() => props.onSelect(isSelected ? '' : filter.value)}
-                >
-                  {filter.label}
-                </ToggleGroupItem>
-              }}
-            </For>
-          </FiltersGroupContainer>
-        }
-      </For>
+      {props.filterGroups.map((rowGroup, index) => (
+        <GroupRow
+          style={{ marginLeft: ((props.offsetRow ?? 0) + index) * DEFAULT_OFFSET_ROW }}
+          key={index}
+        >
+          {rowGroup.map((filter) => {
+            const isSelected = filter.value === props.selectedValue
+            return (
+              <ToggleGroupItem
+                key={filter.value}
+                data-state={isSelected ? 'on' : 'off'}
+                aria-checked={isSelected}
+                value={filter.value as string}
+                className="h-full text-[13px]
+                  data-[state=on]:group-data-[segment=instincts]/filters:bg-instincts/80 
+                  data-[state=on]:group-data-[segment=intellect]/filters:bg-intellect/80 
+                  data-[state=on]:group-data-[segment=balance]/filters:bg-balance/80 
+                cursor-pointer"
+                onClick={() => props.onSelect(isSelected ? null : filter.value)}
+              >
+                {filter.label}
+              </ToggleGroupItem>
+            )
+          })}
+        </GroupRow>
+      ))}
     </ToggleGroup>
   )
 }
 
-
-
-
-export const FiltersGroupContainer = ({
+export const GroupRow = ({
   variant,
   width,
   children,
@@ -54,8 +53,8 @@ export const FiltersGroupContainer = ({
 }: {
   variant?: NavSegments
   width?: string
-  children: React.ReactNode
-} & React.ComponentProps<'div'>) => {
+  children: ReactNode
+} & ComponentProps<'div'>) => {
   return (
     <div style={{ width }} {...props}
       className={cn(

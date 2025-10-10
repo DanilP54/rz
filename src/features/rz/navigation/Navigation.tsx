@@ -1,3 +1,4 @@
+"use client"
 import { NavSegments } from "@/shared/model/routes";
 import { useSelectedLayoutSegment, usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -14,10 +15,7 @@ export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
   const pathname = usePathname();
 
   const toast = toastHintManager();
-  const displayIntroHint = useIntroHintDisplay(
-    selectedRouteSegment,
-    isMobileDevice
-  );
+  const displayIntroHint = useIntroHintDisplay(selectedRouteSegment, isMobileDevice);
   
   useEffect(() => {
     // отвечает за отображение интро-подсказки в toast

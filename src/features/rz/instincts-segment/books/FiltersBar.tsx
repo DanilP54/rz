@@ -1,6 +1,6 @@
 'use client'
 
-import { type FilterOptions, PARAMS, useTypeParams } from "@/features/rz/filters";
+import { type FilterOptions, SEARCH_PARAMS, useTypeParams } from "@/features/rz/filters";
 import { createFilterGroups } from "@/shared/lib/create-array-filter-groups";
 import { FiltersGroupsLayout } from "../../filters/FiltersToggleGroupLayout";
 import { FiltersToggleGroup } from "../../filters/FiltersToggleGroup";
@@ -9,11 +9,11 @@ export const options: Required<Pick<FilterOptions, 'type'>> = {
     type: [
         {
             label: 'по работам',
-            value: PARAMS.BY_WORKS,
+            value: SEARCH_PARAMS.BY_WORKS,
         },
         {
             label: 'по авторам',
-            value: PARAMS.BY_CREATORS,
+            value: SEARCH_PARAMS.BY_CREATORS,
         },
     ],
 }

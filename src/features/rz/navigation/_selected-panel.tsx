@@ -41,7 +41,7 @@ export function SelectedPanel({
       <ul
         className={`${backgroundColor} flex items-center justify-between gap-1 text-white font-bold w-full h-full border`}
       >
-        <For each={sortedLinks}>
+        <For each={links}>
           {(link) => {
             const isActive = currentPath.includes(link.href);
             const ariaCurrentAttribute = isActive ? 'page' : undefined

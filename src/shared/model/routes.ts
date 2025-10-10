@@ -21,17 +21,15 @@ export const ROUTES = {
   radio: "/radio",
   rz: {
     root: "/rz",
-    [NAV_SEGMENTS.INSTINCTS]: buildSegmentRoutes(NAV_SEGMENTS.INSTINCTS),
-    [NAV_SEGMENTS.INTELLECT]: buildSegmentRoutes(NAV_SEGMENTS.INTELLECT),
-    [NAV_SEGMENTS.BALANCE]: buildSegmentRoutes(NAV_SEGMENTS.BALANCE),
+    [NAV_SEGMENTS.INSTINCTS]: buildRZSegmentRoutes(NAV_SEGMENTS.INSTINCTS),
+    [NAV_SEGMENTS.INTELLECT]: buildRZSegmentRoutes(NAV_SEGMENTS.INTELLECT),
+    [NAV_SEGMENTS.BALANCE]: buildRZSegmentRoutes(NAV_SEGMENTS.BALANCE),
   },
 } as const;
 
-export function getSegmentRoutePath<S extends NavSegments>(segment: NavSegments, category: SegmentCategory<S>) {
-    return ROUTES.rz[segment][category]
-}
 
-function buildSegmentRoutes<S extends NavSegments>(
+
+function buildRZSegmentRoutes<S extends NavSegments>(
   segment: S
 ): SegmentRoutes<S> {
   return Object.fromEntries(

@@ -1,27 +1,13 @@
-import { parseAsString, useQueryState } from "nuqs";
-
-export const PARAMS = {
-    AESTHETICS: 'eas',
-    SELFEXPRESSION: 'selfx',
-    CONCERTS: 'live',
-    DOCUMENTARY: 'doc',
-    BY_WORKS: 'by_works',
-    BY_CREATORS: 'by_creators',
-} as const;
-
-export type Params = typeof PARAMS[keyof typeof PARAMS]
+import {createLoader, parseAsStringLiteral} from 'nuqs/server'
+import { TOPIC_PARAMS, VIEW_PARAMS } from '../constants'
 
 export const searchParams = {
-    category: parseAsString.withDefault(''),
-    type: parseAsString.withDefault(''),
+    topic: parseAsStringLiteral([...Object.values(TOPIC_PARAMS)]),
+    view: parseAsStringLiteral([...Object.values(VIEW_PARAMS)]),
 }
 
-export type SearchParams = keyof typeof searchParams
+export const loadSearchParams = createLoader(searchParams);
 
-export const useCategoryParams = () => {
-    return useQueryState('category', searchParams.category);
-}
 
-export const useTypeParams = () => {
-    return useQueryState('type', searchParams.type)
-}
+
+

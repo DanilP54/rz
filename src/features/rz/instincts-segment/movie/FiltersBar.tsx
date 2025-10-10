@@ -2,7 +2,7 @@
 
 import {
   type FilterOptions,
-  PARAMS,
+  SEARCH_PARAMS,
   useCategoryParams,
   useTypeParams,
 } from "@/features/rz/filters";
@@ -14,25 +14,25 @@ export const options: Required<FilterOptions> = {
   category: [
     {
       label: "эстетика",
-      value: PARAMS.AESTHETICS,
+      value: SEARCH_PARAMS.AESTHETICS,
     },
     {
       label: "самовыражение",
-      value: PARAMS.SELFEXPRESSION,
+      value: SEARCH_PARAMS.SELFEXPRESSION,
     },
     {
       label: "концерты",
-      value: PARAMS.CONCERTS,
+      value: SEARCH_PARAMS.CONCERTS,
     },
   ],
   type: [
     {
       label: "по работам",
-      value: PARAMS.BY_WORKS,
+      value: SEARCH_PARAMS.BY_WORKS,
     },
     {
       label: "по авторам",
-      value: PARAMS.BY_CREATORS,
+      value: SEARCH_PARAMS.BY_CREATORS,
     },
   ],
 };
@@ -61,7 +61,7 @@ export function InstinctsMovieFiltersBar() {
           filterGroups={typeFilterGroups}
           selectedValue={type}
           onSelect={updateType}
-          indentLeft={categoryFilterGroups.length}
+          offsetRow={categoryFilterGroups.length}
         />
       )}
     </FiltersGroupsLayout>

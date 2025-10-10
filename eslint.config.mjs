@@ -16,29 +16,10 @@ const eslintConfig = [
   {
     plugins: {
       import: importPlugin,
-      // boundaries: boundariesPlugin,
     },
-    // settings: {
-    //   "boundaries/elements": [
-    //     { type: "app", pattern: "src/app/*/**", mode: 'folder' },
-    //     { type: "features", pattern: "src/features/*/**", mode: 'folder' },
-    //     { type: "shared", pattern: "src/shared/*/**", mode: 'folder' },
-    //   ],
-    // },
+    
     rules: {
       "import/no-cycle": "error",
-      // "boundaries/no-private": [2, { "allowUncles": true }],
-      // "boundaries/element-types": [
-      //   2,
-      //   {
-      //     default: "disallow",
-      //     rules: [
-      //       { from: "app", allow: ["app", "features", "shared"] },
-      //       { from: "features", allow: ["features", "shared"] },
-      //       { from: "shared", allow: ["shared"] },
-      //     ],
-      //   },
-      // ],
       "no-restricted-imports": ['error', {
         patterns: [
           // Ипорт разрешен только из barrel файлов`

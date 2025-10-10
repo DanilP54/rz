@@ -1,6 +1,6 @@
 'use client'
 
-import { type FilterOptions, PARAMS, useCategoryParams, useTypeParams } from "@/features/rz/filters";
+import { type FilterOptions, SEARCH_PARAMS, useCategoryParams, useTypeParams } from "@/features/rz/filters";
 import { createFilterGroups } from "@/shared/lib/create-array-filter-groups";
 import { FiltersGroupsLayout } from "../../filters/FiltersToggleGroupLayout";
 import { FiltersToggleGroup } from "../../filters/FiltersToggleGroup";
@@ -10,21 +10,21 @@ export const options: Required<FilterOptions> = {
     category: [
         {
             label: 'эстетика',
-            value: PARAMS.AESTHETICS,
+            value: SEARCH_PARAMS.AESTHETICS,
         },
         {
             label: 'самовыражение',
-            value: PARAMS.SELFEXPRESSION,
+            value: SEARCH_PARAMS.SELFEXPRESSION,
         }
     ],
     type: [
         {
             label: 'по работам',
-            value: PARAMS.BY_WORKS,
+            value: SEARCH_PARAMS.BY_WORKS,
         },
         {
             label: 'по авторам',
-            value: PARAMS.BY_CREATORS,
+            value: SEARCH_PARAMS.BY_CREATORS,
         }
     ],
 }
@@ -54,7 +54,7 @@ export function IntellectMusicFiltersBar() {
                 filterGroups={typeFilterGroups}
                 selectedValue={type}
                 onSelect={updateType}
-                indentLeft={categoryFilterGroups.length}
+                offsetRow={categoryFilterGroups.length}
             />}
         </FiltersGroupsLayout>
     )
