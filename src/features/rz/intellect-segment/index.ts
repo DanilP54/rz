@@ -1,1 +1,0 @@
-export { IntellectMusicFiltersBar } from './music'

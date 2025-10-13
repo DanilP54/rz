@@ -1,6 +1,5 @@
 import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 import { screen } from "@testing-library/dom";
-import userEvent from "@testing-library/user-event";
 
 export class DisclosureNavPanelTestObject {
   private triggerElement: HTMLElement;
@@ -35,17 +34,17 @@ export class DisclosureNavPanelTestObject {
     return !this.triggerIsExpanded() && this.dropdownMenuIsHidden();
   }
 
-  async clickTrigger() {
+  async clickTrigger(onClick: (trigger: Element) => Promise<void>) {
     const trigger = this.getTrigger();
-    return userEvent.setup().click(trigger);
+    return onClick(trigger);
   }
 
-  async clickOutside() {
+  async clickOutside(onClick: (trigger: Element) => Promise<void>) {
     const body = document.body;
-    await userEvent.setup().click(body);
+    await onClick(body);
   }
 
-  async selectCategory(category: SegmentCategory<typeof this.segment>) {
+  async selectCategory(category: SegmentCategory<typeof this.segment>, onClick: (trigger: Element) => Promise<void>) {
     const dropdownMenu = this.getDropdownMenu();
     const anchors = Array.from(
       dropdownMenu.querySelectorAll<HTMLAnchorElement>("a")
@@ -57,7 +56,7 @@ export class DisclosureNavPanelTestObject {
     });
     
     if (target) {
-      await userEvent.setup().click(target);
+      await onClick(target);
     }
   }
 

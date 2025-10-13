@@ -1,19 +1,51 @@
-import { inferParserType } from "nuqs";
-import { TOPIC_PARAMS, VIEW_PARAMS } from "./constants";
-import { searchParams } from "./model/search-params";
+import type { NavSegments, SegmentCategory } from "@/shared/model/routes";
+import type { SearchParams, SearchParamsKeys } from "./model/search-params";
 
-export type TopicParams = typeof TOPIC_PARAMS[keyof typeof TOPIC_PARAMS]
-export type ViewParams = typeof VIEW_PARAMS[keyof typeof VIEW_PARAMS]
+export type VisibilityParams = Record<string, string | null | undefined>;
 
-export type AllParams = TopicParams | ViewParams
+export type FilterRuleKey = SearchParamsKeys;
 
-export type FilterOption<Params> = {
-    label: string;
-    value: Params
+export interface FilterRuleBase {
+  readonly key: FilterRuleKey;
+  readonly dependsOn?: ReadonlyArray<FilterRuleKey>;
+  readonly visibleIf?: (params: VisibilityParams) => boolean;
 }
 
-type SearchParams = inferParserType<typeof searchParams>
+export type ResetReason = "hide" | "dependencyChange";
 
-export type FilterGroup = {
-    [P in keyof SearchParams]: FilterOption<SearchParams[P]>[]
+export interface ResetContext {
+  readonly key: FilterRuleKey;
+  readonly reason: ResetReason;
+  readonly params: VisibilityParams;
 }
+
+export interface AutoResetFilterRule extends FilterRuleBase {
+  readonly onReset?: (ctx: ResetContext) => unknown;
+}
+
+export type FiltersRules<TRule extends FilterRuleBase = FilterRuleBase> =
+  ReadonlyArray<TRule>;
+
+// Shared filter options types
+export type FilterOption<Param> = {
+  label: string;
+  value: Param;
+};
+
+export type FilterOptionsByParams = {
+  [P in keyof SearchParams]: FilterOption<NonNullable<SearchParams[P]>>[];
+};
+
+// Schema types
+export type CategorySchema = {
+  rules: FiltersRules; // array of rule objects
+  options: Readonly<FilterOptionsByParams>;
+};
+
+export type SegmentSchema<S extends NavSegments = NavSegments> = {
+  [C in SegmentCategory<S>]: CategorySchema;
+};
+
+export type FiltersSchema = {
+  [S in NavSegments]: SegmentSchema<S>;
+};

@@ -1,1 +1,1 @@
-export { Layout as RzLayout } from './Layout'
+export { Layout as RzLayout } from './layout'

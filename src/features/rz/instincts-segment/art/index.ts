@@ -1,1 +1,0 @@
-export {InstinctsArtFiltersBar} from './FiltersBar';

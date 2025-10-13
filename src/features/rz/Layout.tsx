@@ -1,6 +1,4 @@
-// import { NavigationPanels } from "@/features/rz/navigation-panels";
-import { Header } from "./Header";
-
+import { Header } from "./header";
 
 export function Layout({
   children,
@@ -18,8 +16,6 @@ export function Layout({
             [&:has([data-segment=balance])_#header]:bg-balance"
     >
       <Header />
-      {/* <Navigation /> */}
-      {/* <NavigationPanels /> */}
       {children}
     </div>
   );

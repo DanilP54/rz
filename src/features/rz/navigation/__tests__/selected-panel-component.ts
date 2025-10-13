@@ -1,6 +1,5 @@
 import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 import { screen } from "@testing-library/dom";
-import userEvent from "@testing-library/user-event";
 
 export class SelectedNavPanelTestObject {
   private panelElement: HTMLElement;
@@ -40,7 +39,7 @@ export class SelectedNavPanelTestObject {
     return this.getPanel().querySelectorAll("a").length;
   }
 
-  async selectCategory(category: SegmentCategory<typeof this.segment>) {
+  async selectCategory(category: SegmentCategory<typeof this.segment>, onClick: (target: Element) => Promise<void>) {
     const allLinks = Array.from(this.getPanel().querySelectorAll("a"));
     const target = allLinks.find((anchor) => {
       const dataLabel = anchor.getAttribute("data-label");
@@ -49,7 +48,7 @@ export class SelectedNavPanelTestObject {
     });
 
     if (target) {
-      await userEvent.setup().click(target);
+      await onClick(target);
     }
   }
 }

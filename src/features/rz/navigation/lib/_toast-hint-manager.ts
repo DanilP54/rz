@@ -12,7 +12,7 @@ export const toastHintManager = () => {
   const show = (message: string, options?: ExternalToast) => {
     return toast(message, {
       ...options,
-      style: customStyle,
+      style: options?.style ?? customStyle,
     });
   };
 

@@ -19,7 +19,7 @@ interface IPanels {
 export function Panels(props: IPanels) {
 
     const { config, currentPathname, selectedRouteSegment, isMobileDevice } = props;
-  
+    
     const [expandedDiscPanel, setExpandedDiscPanel] =
       useState<NavSegments | null>(null);
     const storage = useHintsStorage()

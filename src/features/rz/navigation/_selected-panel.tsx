@@ -39,7 +39,7 @@ export function SelectedPanel({
       className="group relative h-[40px]"
     >
       <ul
-        className={`${backgroundColor} flex items-center justify-between gap-1 text-white font-bold w-full h-full border`}
+        className={`${backgroundColor} flex items-center justify-between gap-1 text-white font-bold w-full h-full`}
       >
         <For each={links}>
           {(link) => {
