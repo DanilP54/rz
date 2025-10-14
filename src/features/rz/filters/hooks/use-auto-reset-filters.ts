@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import type {
-  AutoResetFilterRule,
   FiltersRules,
   FilterRuleKey,
   VisibilityParams,
@@ -11,43 +10,28 @@ type Setter = (...args: any[]) => any;
 type SettersMap = Partial<Record<FilterRuleKey, Setter>>;
 
 export function useAutoResetFilters(
-  rules: FiltersRules<AutoResetFilterRule>,
+  rules: FiltersRules,
   params: VisibilityParams,
   setters: SettersMap
 ): void {
-  const prevParamsRef = useRef<VisibilityParams>({});
+  const prevVisibilityRef = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
-    const prevParams = prevParamsRef.current;
+    const prevVisibility = prevVisibilityRef.current;
 
     for (const rule of rules) {
       const key = rule.key;
       const currentValue = params[key];
       const isVisible = isRuleVisible(rule, params);
+      const wasVisible = prevVisibility[key] ?? true;
 
-      // 1) Reset when hidden
-      if (!isVisible && currentValue !== null) {
-        const next = rule.onReset?.({ key, reason: "hide", params });
-        setters[key]?.(next ?? null);
-        continue;
+      // Сбрасываем только при переходе visible -> hidden
+      if (wasVisible && !isVisible && currentValue !== null) {
+        setters[key]?.(null);
       }
 
-      // 2) Reset when any dependency changed while value is set
-      if (isVisible && rule.dependsOn?.length && currentValue !== null) {
-        const depsChanged = rule.dependsOn.some(
-          (dep) => prevParams[dep] !== params[dep]
-        );
-        if (depsChanged) {
-          const next = rule.onReset?.({
-            key,
-            reason: "dependencyChange",
-            params,
-          });
-          setters[key]?.(next ?? null);
-        }
-      }
+      prevVisibility[key] = isVisible;
     }
-
-    prevParamsRef.current = { ...params };
   }, [rules, params, setters]);
 }
+

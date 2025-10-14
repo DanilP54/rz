@@ -4,8 +4,8 @@ import React, { createContext, use, useTransition } from "react";
 
 
 type ContextType = {
-    isPending: boolean;
-    startTransition: React.TransitionStartFunction
+  isPending: boolean;
+  startTransition: React.TransitionStartFunction
 }
 
 const Context = createContext<ContextType | null>(null);
@@ -13,19 +13,17 @@ const Context = createContext<ContextType | null>(null);
 export const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPending, startTransition] = useTransition();
 
-  const value = {
+  return <Context value={{
     isPending,
-    startTransition,
-  };
-
-  return <Context value={value}>{children}</Context>;
+    startTransition
+  }}>{children}</Context>;
 };
 
 export const useContextCus = () => {
-    const context = use(Context)
-    if(!context) {
-        throw new Error('Error context')
-    }
+  const context = use(Context)
+  if (!context) {
+    throw new Error('Error context')
+  }
 
-    return context
+  return context
 }

@@ -1,5 +1,5 @@
 import { Header } from "@/features/rz/header";
-import { Navigation } from "@/features/rz/navigation/Navigation";
+import { Navigation } from "@/features/rz/navigation";
 
 import React from "react";
 

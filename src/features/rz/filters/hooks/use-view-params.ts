@@ -1,6 +1,7 @@
 import { Options, useQueryState } from "nuqs";
-import { searchParams } from "../model/search-params";
+import { searchParams, VIEW_KEY } from "../model/search-params";
 
-export const useViewParams = (options?: Options) => useQueryState('view', searchParams.view.withOptions({
-    ...options
-}))
+export const useViewParams = (options?: Options) => useQueryState(VIEW_KEY,
+    searchParams.view.withOptions({
+        ...options
+    }));

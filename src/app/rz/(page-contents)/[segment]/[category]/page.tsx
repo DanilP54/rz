@@ -1,9 +1,8 @@
-import { FiltersBar } from "@/features/rz/filters/filters-bar";
-import { loadSearchParams } from "@/features/rz/filters/model/search-params";
+import { FiltersBar, loadSearchParams } from "@/features/rz/filters";
 import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 import { type SearchParams } from "nuqs/server";
 import { Suspense } from "react";
-import { SearchParams as FiltersSP } from "@/features/rz/filters/model/search-params";
+
 import { ContextProvider } from "./prov";
 import { Content } from "./Content";
 
@@ -17,10 +16,10 @@ type PageProps = {
   searchParams: Promise<SearchParams>;
 };
 
-async function getContent(
+async function getContent<T>(
   segment: NavSegments,
   category: SegmentCategory<NavSegments>,
-  searchParams: FiltersSP
+  searchParams: T
 ) {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -32,7 +31,7 @@ async function getContent(
 export default async function Page(props: PageProps) {
   const { segment, category } = await props.params;
   const searchParams = await loadSearchParams(props.searchParams);
-
+  console.log(searchParams)
   const cardListPromise = getContent(segment, category, {
     ...searchParams,
   });
@@ -44,18 +43,21 @@ export default async function Page(props: PageProps) {
       data-hassegment={String(Boolean(segment))}
     >
       <ContextProvider>
-        <FiltersBar segment={segment} category={category} />
-        <Suspense
-          // key={`${searchParams.topic}-${searchParams.view}`}
-          fallback={
-            <>
-              <h1>Cards loading</h1>
-            </>
-          }
-        >
+        <FiltersBar segment={segment} category={category} isMobileDevice={false} />
+        <Suspense fallback={<Fallback />}>
           <Content promise={cardListPromise} />
         </Suspense>
       </ContextProvider>
     </div>
   );
+}
+
+
+
+function Fallback() {
+  return (
+    <>
+      <h1>Cards loading</h1>
+    </>
+  )
 }

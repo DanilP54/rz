@@ -8,25 +8,24 @@ import type {
   CategorySchema,
   FiltersSchema,
   FilterOptionsByParams,
-  FiltersRules
+  FiltersRules,
 } from "../types";
 
-import { INSTINCTS_SCHEMA } from "./instincts";
-import { INTELLECT_SCHEMA } from "./intellect";
-import { BALANCE_SCHEMA } from "./balance";
+import { INSTINCTS_CONFIG } from "./instincts";
+import { INTELLECT_CONFIG } from "./intellect";
+import { BALANCE_CONFIG } from "./balance";
 
-
-export const FILTERS_SCHEMA: FiltersSchema = {
-  [NAV_SEGMENTS.INSTINCTS]: INSTINCTS_SCHEMA,
-  [NAV_SEGMENTS.INTELLECT]: INTELLECT_SCHEMA,
-  [NAV_SEGMENTS.BALANCE]: BALANCE_SCHEMA,
+export const FILTERS_CONFIG: FiltersSchema = {
+  [NAV_SEGMENTS.INSTINCTS]: INSTINCTS_CONFIG,
+  [NAV_SEGMENTS.INTELLECT]: INTELLECT_CONFIG,
+  [NAV_SEGMENTS.BALANCE]: BALANCE_CONFIG,
 };
 
 export function getCategorySchema<S extends NavSegments>(
   segment: S,
   category: SegmentCategory<S>
 ): CategorySchema {
-  return FILTERS_SCHEMA[segment][category];
+  return FILTERS_CONFIG[segment][category];
 }
 
 export function getFilterRules<S extends NavSegments>(

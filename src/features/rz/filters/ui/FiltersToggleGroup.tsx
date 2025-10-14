@@ -2,7 +2,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/shared/ui/toggle-group";
 import { cn } from "@/shared/lib/utils";
 import { NavSegments } from "@/shared/model/routes";
 import type { ComponentProps, ReactNode } from "react";
-import { FilterOption } from "./filter-options";
+import { FilterOption } from "../types";
 
 const DEFAULT_OFFSET_ROW = 35
 

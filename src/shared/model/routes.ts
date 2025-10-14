@@ -8,13 +8,11 @@ export const NAV_SEGMENTS = {
   BALANCE: "balance",
 } as const;
 
-
 export const SEGMENT_CATEGORIES = {
   [NAV_SEGMENTS.INSTINCTS]: ["music", "movies", "books", "art"] as const,
   [NAV_SEGMENTS.INTELLECT]: ["music", "movies", "books", "art"] as const,
   [NAV_SEGMENTS.BALANCE]: ["music", "movies", "books", "art"] as const,
 } as const;
-
 
 export const ROUTES = {
   feed: "/feed",
@@ -27,8 +25,6 @@ export const ROUTES = {
   },
 } as const;
 
-
-
 function buildRZSegmentRoutes<S extends NavSegments>(
   segment: S
 ): SegmentRoutes<S> {
@@ -39,3 +35,8 @@ function buildRZSegmentRoutes<S extends NavSegments>(
     ])
   ) as SegmentRoutes<S>;
 }
+
+export const getRzRoute = <S extends NavSegments>(segment: S, category: SegmentCategory<S>) => {
+  return ROUTES.rz[segment][category];
+}
+

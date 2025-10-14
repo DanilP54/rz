@@ -36,12 +36,12 @@ export class DisclosureNavPanelTestObject {
 
   async clickTrigger(onClick: (trigger: Element) => Promise<void>) {
     const trigger = this.getTrigger();
-    return onClick(trigger);
+    onClick(trigger);
   }
 
   async clickOutside(onClick: (trigger: Element) => Promise<void>) {
     const body = document.body;
-    await onClick(body);
+    onClick(body);
   }
 
   async selectCategory(category: SegmentCategory<typeof this.segment>, onClick: (trigger: Element) => Promise<void>) {
@@ -56,7 +56,7 @@ export class DisclosureNavPanelTestObject {
     });
     
     if (target) {
-      await onClick(target);
+      onClick(target);
     }
   }
 

@@ -1,16 +1,17 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { config } from "../_config";
 import { NavSegments, ROUTES, SegmentCategory } from "@/shared/model/routes";
 import { renderComponent } from "@/test-utils";
 import { NavHintsTestObject } from "./hints-component";
 import { DisclosureNavPanelTestObject } from "./disclosure-panel-component";
 import { SelectedNavPanelTestObject } from "./selected-panel-component";
-import { getStoredHints, setStoredHints } from "./storage-helper";
+
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { waitFor } from "@testing-library/dom";
 import { Navigation } from "../Navigation";
 import userEvent from "@testing-library/user-event";
+import { config } from "../config/_config";
+import { storageAdapter } from "./storage-adapter";
 
 vi.mock("next/navigation", () => ({
   useSelectedLayoutSegment: vi.fn(),
@@ -50,8 +51,12 @@ describe("Navigation Component", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
+    storageAdapter().clear()
   });
+
+  afterAll(() => {
+    vi.restoreAllMocks()
+  })
 
   describe("Disclosure Panel Behavior", () => {
     let disclosurePanel: DisclosureNavPanelTestObject;
@@ -104,7 +109,7 @@ describe("Navigation Component", () => {
       });
 
       it("should have an empty hint storage initially", () => {
-        expect(getStoredHints()).toEqual([]);
+        expect(storageAdapter().get()).toEqual([]);
       });
     });
 
@@ -148,7 +153,7 @@ describe("Navigation Component", () => {
       });
 
       it("should add the visited segment to storage", () => {
-        expect(getStoredHints()).toEqual([TEST_SEGMENT]);
+        expect(storageAdapter().get()).toEqual([TEST_SEGMENT]);
       });
     });
 
@@ -156,19 +161,19 @@ describe("Navigation Component", () => {
       // Test 1: Start at index, storage is empty
       simulateRouteToIndex();
       const { rerender } = renderComponent(<Navigation isMobileDevice />);
-      expect(getStoredHints()).toEqual([]);
+      expect(storageAdapter().get()).toEqual([]);
 
       // Test 2: Navigate to a segment, both segment and intro key are stored
       simulateRouteChange(TEST_SEGMENT, 'movies');
       rerender(<Navigation isMobileDevice />);
-      expect(getStoredHints()).toEqual(expect.arrayContaining([INTRO_HINT_STORAGE_KEY, TEST_SEGMENT]));
-      expect(getStoredHints()).toHaveLength(2);
+      expect(storageAdapter().get()).toEqual(expect.arrayContaining([INTRO_HINT_STORAGE_KEY, TEST_SEGMENT]));
+      expect(storageAdapter().get()).toHaveLength(2);
     });
   });
 
   describe("Repeat Visit Behavior", () => {
     it("should not display a hint for a previously visited segment", async () => {
-      setStoredHints([TEST_SEGMENT]);
+      storageAdapter().update([TEST_SEGMENT]);
       simulateRouteChange(TEST_SEGMENT, 'movies');
       renderComponent(<Navigation isMobileDevice />);
       navHints = new NavHintsTestObject(config.intro.text);
@@ -180,7 +185,7 @@ describe("Navigation Component", () => {
     });
 
     it("should not display the intro hint if it has been seen before", async () => {
-      setStoredHints([INTRO_HINT_STORAGE_KEY]);
+      storageAdapter().update([INTRO_HINT_STORAGE_KEY]);
       simulateRouteToIndex();
       renderComponent(<Navigation isMobileDevice />);
       navHints = new NavHintsTestObject(config.intro.text);

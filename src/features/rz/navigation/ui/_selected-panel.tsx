@@ -1,8 +1,8 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel, NavLink } from "./types";
+import { Panel as TPanel, NavLink } from "../types";
 import { For } from "@/shared/For";
-import { sortWithActiveItem } from "./lib/_sort-active-item";
+import { sortWithActiveItem } from "../lib/_sort-active-item";
 
 
 interface ISelectedPanel {

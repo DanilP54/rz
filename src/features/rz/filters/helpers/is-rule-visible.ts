@@ -6,6 +6,6 @@ export const isRuleVisible = (
 ): boolean => {
   if (rule.visibleIf) return rule.visibleIf(params);
   if (rule.dependsOn?.length)
-    return rule.dependsOn.every((dep) => params[dep] != null);
+    return rule.dependsOn.every((dep) => params[dep] !== null);
   return true;
 };
