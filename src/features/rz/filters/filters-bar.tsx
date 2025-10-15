@@ -10,17 +10,26 @@ import { useTopicParams } from "./hooks/use-topic-params";
 import { useViewParams } from "./hooks/use-view-params";
 import { useVisibleRules } from "./hooks/use-visible-rules";
 import { useAutoResetFilters } from "./hooks/use-auto-reset-filters";
-import { useContextCus } from "@/app/rz/(page-contents)/[segment]/[category]/prov";
-import { getFilters } from "./config/config";
+import { useTransitionContext } from "@/app/rz/(page-contents)/[segment]/[category]/TransitionProvider";
+import { FilterOptionsByParams, FiltersRules } from "./types";
 
 interface IFiltersBar {
   segment: NavSegments;
   category: SegmentCategory<NavSegments>;
   isMobileDevice?: boolean;
+  rules: FiltersRules
+  options: Readonly<FilterOptionsByParams>
 }
 
-export function FiltersBar({ segment, category, isMobileDevice }: IFiltersBar) {
-  const { startTransition } = useContextCus();
+export function FiltersBar({
+  segment,
+  category,
+  rules,
+  options,
+  isMobileDevice
+}: IFiltersBar) {
+
+  const { startTransition } = useTransitionContext();
 
   const [topic, updateTopic] = useTopicParams({
     shallow: false,
@@ -32,12 +41,7 @@ export function FiltersBar({ segment, category, isMobileDevice }: IFiltersBar) {
     startTransition,
   });
 
-  const { options, rules } = getFilters(segment, category);
-
-  const visibleRule = useVisibleRules(rules, {
-    topic,
-    view,
-  });
+  const visibleRule = useVisibleRules(rules, { topic, view });
 
   useAutoResetFilters(
     rules,

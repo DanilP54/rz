@@ -22,7 +22,7 @@ export const INTELLECT_CONFIG: SegmentSchema<typeof NAV_SEGMENTS.INTELLECT> = {
       {
         key: "view",
         dependsOn: ["topic"],
-        visibleIf: (params) => !!params.topic && params.topic !== "doc",
+        // visibleIf: (params) => !!params.topic && params.topic !== "doc",
       },
     ],
     options: {

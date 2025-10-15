@@ -1,8 +1,8 @@
-import { paths } from './api/v1';
+import { paths } from './v1';
 import createClient from "openapi-fetch"
 
-const client = createClient<paths>({
-  baseUrl: "http://localhost:8000"
+export const client = createClient<paths>({
+  baseUrl: "http://localhost:8000",
 })
 
 

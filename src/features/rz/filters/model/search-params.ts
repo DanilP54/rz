@@ -27,7 +27,7 @@ export type AllParams = TopicParams | ViewParams
 
 export const searchParams = {
     [TOPIC_KEY]: parseAsStringLiteral([...Object.values(TOPIC_PARAMS)]),
-    [VIEW_KEY]: parseAsStringLiteral([...Object.values(VIEW_PARAMS)]).withDefault('all'),
+    [VIEW_KEY]: parseAsStringLiteral([...Object.values(VIEW_PARAMS)]).withDefault(VIEW_PARAMS.all),
 }
 
 export type SearchParams = inferParserType<typeof searchParams>
