@@ -2,7 +2,6 @@ import { FiltersBar, loadSearchParams } from "@/features/rz/filters";
 import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 import { Suspense } from "react";
 
-import { TransitionProvider } from "./TransitionProvider";
 import { ContentCardList } from "./Content";
 import { client } from "@/shared/api/client";
 import { PageProps } from "@/app/rz/types";
@@ -22,50 +21,44 @@ async function getContent<T>(
 
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(1)
-    }, 2000)
-  })
+      resolve(1);
+    }, 2000);
+  });
 }
 
 export default async function Page(props: PageProps) {
-
-  const { segment, category } = await props.params;
   
+  const { segment, category } = await props.params;
   const searchParams = await loadSearchParams(props.searchParams);
 
-  
   const contentListPromise = getContent(segment, category, { ...searchParams });
 
-  const { rules, options } =  getFilters(segment, category)
-  
+  const { rules, options } = getFilters(segment, category);
+
   return (
     <div
       id={"page"}
       data-segment={segment}
       data-hassegment={String(Boolean(segment))}
     >
-      <TransitionProvider>
-        <FiltersBar
-          rules={rules}
-          options={options}
-          segment={segment}
-          category={category}
-          isMobileDevice={false}
-        />
-        <Suspense fallback={<Fallback />}>
-          <ContentCardList promise={contentListPromise} />
-        </Suspense>
-      </TransitionProvider>
+      <FiltersBar
+        rules={rules}
+        options={options}
+        segment={segment}
+        category={category}
+        isMobileDevice={false}
+      />
+      <Suspense fallback={<Fallback />}>
+        <ContentCardList promise={contentListPromise} />
+      </Suspense>
     </div>
   );
 }
-
-
 
 function Fallback() {
   return (
     <>
       <h1>Cards loading</h1>
     </>
-  )
+  );
 }

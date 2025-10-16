@@ -1,11 +1,12 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel, NavLink } from "./types";
 import { For } from "@/shared/For";
-import { sortWithActiveItem } from "./lib/_sort-active-item";
+
+import { NavLink, Panel } from "../types";
+import { sortWithActiveItem } from "../lib/_sort-active-item";
 
 interface ISelectedPanel {
-  panel: TPanel;
+  panel: Panel;
   isSelected?: boolean;
   isMobileDevice: boolean;
   currentPath: string;

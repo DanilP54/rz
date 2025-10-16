@@ -2,7 +2,7 @@ import { paths } from './v1';
 import createClient from "openapi-fetch"
 
 export const client = createClient<paths>({
-  baseUrl: "http://localhost:8000",
+  baseUrl: "http://localhost:3333",
 })
 
 

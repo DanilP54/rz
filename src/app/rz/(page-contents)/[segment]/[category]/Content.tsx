@@ -1,17 +1,16 @@
-"use client"
+"use client";
 
 import { use } from "react";
-import { useTransitionContext } from "./TransitionProvider";
-import { FetchResponse } from "openapi-fetch";
-import { paths } from "@/shared/api/v1";
+import { useTransitAction } from "@/shared/hooks/use-transition-provider";
 
 export function ContentCardList({ promise }: { promise: Promise<any> }) {
-
-  const { isPending } = useTransitionContext();
-  const {data, error} = use(promise);
+  const { isPending } = useTransitAction();
+  const { data, error } = use(promise);
   return (
     <>
-      <h1>{isPending ? 'pending' : 'content'}</h1>
+      <h1 className={`${isPending && "opacity-50"}`}>
+        {isPending ? "pending" : "content"}
+      </h1>
     </>
   );
 }

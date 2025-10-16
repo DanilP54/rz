@@ -10,8 +10,8 @@ import { useTopicParams } from "./hooks/use-topic-params";
 import { useViewParams } from "./hooks/use-view-params";
 import { useVisibleRules } from "./hooks/use-visible-rules";
 import { useAutoResetFilters } from "./hooks/use-auto-reset-filters";
-import { useTransitionContext } from "@/app/rz/(page-contents)/[segment]/[category]/TransitionProvider";
 import { FilterOptionsByParams, FiltersRules } from "./types";
+import { useTransitAction } from "@/shared/hooks/use-transition-provider";
 
 interface IFiltersBar {
   segment: NavSegments;
@@ -29,7 +29,7 @@ export function FiltersBar({
   isMobileDevice,
 }: IFiltersBar) {
   
-  const { startTransition } = useTransitionContext();
+  const { startTransition } = useTransitAction();
 
   const [topic, updateTopic] = useTopicParams({
     shallow: false,
