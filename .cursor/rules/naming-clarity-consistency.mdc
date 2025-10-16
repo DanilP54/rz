@@ -1,0 +1,61 @@
+---
+globs: *.ts,*.tsx,*.js,*.jsx
+description: Enforce clear, domain-relevant names using the A/HC/LC pattern (Action + High Context + optional Low Context) for functions, variables, and handlers.
+---
+
+## Naming Clarity and Consistency
+
+- **Use clear, domain-relevant names** that describe what the code does.
+- **Avoid names** that are too short, too long, misleading, or reused for different entities.
+- **Follow the A/HC/LC pattern** for function names: Action + High Context + optional Low Context.
+  - **Action (A)**: Imperative verb (e.g., `validate`, `create`, `fetch`, `handle`).
+  - **High Context (HC)**: The domain object or concept (e.g., `Order`, `UserProfile`).
+  - **Low Context (LC, optional)**: Disambiguator (e.g., `ById`, `IfDirty`, `Submit`).
+- **Distinct names for distinct entities**; do not reuse one name for multiple concepts.
+- **Event handlers** should be prefixed with `handle` and include context (e.g., `handleOrderSubmit`).
+
+### Bad Practice
+
+```ts
+let d = 0;
+if (c === "HAPPY_FRIDAY") d = p * 0.2;
+
+async function submitOrderCreationFormIfValid() {
+  // too long, unclear, does too much
+}
+
+function findUser(user, users) {
+  return users.find(({ name }) => name === user);
+}
+```
+
+### Good Practice
+
+```ts
+let discount = 0;
+if (coupon === "HAPPY_FRIDAY") discount = price * 0.2;
+
+const validateFormData = () => {};
+const createOrder = () => {};
+const handleOrderSubmit = async (event: SubmitEvent) => {
+  const data = serializeForm(event.target as HTMLFormElement);
+  const validData = validateFormData(data);
+  const order = createOrder(validData);
+  await sendOrder(order);
+};
+
+function findUser(userName: string, users: { name: string }[]) {
+  return users.find(({ name }) => name === userName);
+}
+```
+
+### A/HC/LC Examples
+
+- `validateFormData` → A: validate, HC: FormData
+- `createOrder` → A: create, HC: Order
+- `handleOrderSubmit` → A: handle, HC: Order, LC: Submit
+- `fetchUserProfileById` → A: fetch, HC: UserProfile, LC: ById
+
+### Summary
+
+**A good name is short enough to read quickly but clear enough to reveal intent. Each distinct entity deserves a distinct, truthful name.**

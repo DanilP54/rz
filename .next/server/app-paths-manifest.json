@@ -1,0 +1,5 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/rz/(page-contents)/page": "app/rz/(page-contents)/page.js",
+  "/rz/(page-contents)/[segment]/[category]/page": "app/rz/(page-contents)/[segment]/[category]/page.js"
+}

@@ -617,3 +617,275 @@ export const getRzCreatorRoute = <S extends NavSegments>(
 ) => {
   return `/rz/${segment}/creators/${creatorSlug}`;
 };
+
+
+
+
+
+
+-- Основные таблицы (улучшенный нейминг: descriptive, consistent prefixes)
+
+CREATE TABLE content_creators (
+    id SERIAL PRIMARY KEY,
+    segment_id INT NOT NULL REFERENCES segments(id),
+    slug VARCHAR(500) UNIQUE NOT NULL,
+    full_name VARCHAR(255) NOT NULL,  -- Улучшено: name -> full_name
+    biography TEXT,
+    profile_image_url VARCHAR(500),
+    birth_date DATE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE films (
+    id SERIAL PRIMARY KEY,
+    segment_id INT NOT NULL REFERENCES segments(id),
+    slug VARCHAR(500) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    synopsis TEXT,  -- Улучшено: description -> synopsis
+    publication_year INT CHECK (publication_year >= 1900 AND publication_year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    runtime_minutes INT CHECK (runtime_minutes > 0),  -- Улучшено: duration_minutes -> runtime_minutes
+    poster_image_url VARCHAR(500),
+    poster_media_mime_type VARCHAR(50),
+    trailer_video_url VARCHAR(500),  -- Улучшено: video_url -> trailer_video_url
+    embedded_directors JSONB DEFAULT '[]'::JSONB,  -- Улучшено: directors -> embedded_directors
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE music_releases (
+    id SERIAL PRIMARY KEY,
+    segment_id INT NOT NULL REFERENCES segments(id),
+    slug VARCHAR(500) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    publication_year INT CHECK (publication_year >= 1900 AND publication_year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    release_cover_image_url VARCHAR(500),  -- Улучшено: cover_art_url -> release_cover_image_url
+    cover_media_mime_type VARCHAR(50),
+    embedded_artists JSONB DEFAULT '[]'::JSONB,  -- Улучшено: artists -> embedded_artists
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE music_tracks (
+    id SERIAL PRIMARY KEY,
+    release_id INT NOT NULL REFERENCES music_releases(id) ON DELETE SET NULL,  -- Улучшено: album_id -> release_id
+    title VARCHAR(255) NOT NULL,
+    track_duration_seconds INT CHECK (track_duration_seconds > 0),  -- Улучшено: duration_seconds -> track_duration_seconds
+    track_sequence_number INT CHECK (track_sequence_number > 0),  -- Улучшено: track_number -> track_sequence_number
+    audio_file_url VARCHAR(500),
+    audio_media_mime_type VARCHAR(50),
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    segment_id INT NOT NULL REFERENCES segments(id),
+    slug VARCHAR(500) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    synopsis TEXT,  -- Улучшено: description -> synopsis
+    publication_year INT CHECK (publication_year >= 1900 AND publication_year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    cover_image_url VARCHAR(500),
+    cover_media_mime_type VARCHAR(50),
+    isbn VARCHAR(20),
+    embedded_authors JSONB DEFAULT '[]'::JSONB,  -- Улучшено: authors -> embedded_authors
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE visual_artworks (
+    id SERIAL PRIMARY KEY,
+    segment_id INT NOT NULL REFERENCES segments(id),
+    slug VARCHAR(500) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    creation_year INT CHECK (creation_year >= 1000 AND creation_year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    artwork_image_url VARCHAR(500),  -- Улучшено: image_url -> artwork_image_url
+    image_media_mime_type VARCHAR(50),
+    embedded_artists JSONB DEFAULT '[]'::JSONB,  -- Уже было, но consistently
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Связующие таблицы (улучшенный нейминг: associations для many-to-many)
+
+CREATE TABLE content_taggings (
+    topic_id INT NOT NULL REFERENCES topics(id) ON DELETE CASCADE,
+    taggable_id INT NOT NULL,
+    taggable_type VARCHAR(255) NOT NULL CHECK (taggable_type IN ('content_creator', 'film', 'music_release', 'book', 'visual_artwork')),  -- Улучшено: обновлён enum
+    PRIMARY KEY (topic_id, taggable_id, taggable_type)
+);
+
+CREATE TABLE film_director_associations (
+    film_id INT NOT NULL REFERENCES films(id) ON DELETE SET NULL,
+    creator_id INT NOT NULL REFERENCES content_creators(id) ON DELETE CASCADE,  -- Улучшено: creator_id -> creator_id (consistent), но таблица descriptive
+    PRIMARY KEY (film_id, creator_id)
+);
+
+CREATE TABLE music_artist_associations (
+    release_id INT NOT NULL REFERENCES music_releases(id) ON DELETE SET NULL,  -- Улучшено: album_id -> release_id
+    creator_id INT NOT NULL REFERENCES content_creators(id) ON DELETE CASCADE,
+    PRIMARY KEY (release_id, creator_id)
+);
+
+CREATE TABLE book_author_associations (
+    book_id INT NOT NULL REFERENCES books(id) ON DELETE SET NULL,
+    creator_id INT NOT NULL REFERENCES content_creators(id) ON DELETE CASCADE,
+    PRIMARY KEY (book_id, creator_id)
+);
+
+CREATE TABLE artwork_artist_associations (
+    artwork_id INT NOT NULL REFERENCES visual_artworks(id) ON DELETE SET NULL,
+    creator_id INT NOT NULL REFERENCES content_creators(id) ON DELETE CASCADE,
+    PRIMARY KEY (artwork_id, creator_id)
+);
+
+-- Функции и триггеры (обновлены под новые имена)
+
+-- Функция для updated_at (без изменений)
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Триггеры для updated_at (обновлены имена таблиц)
+CREATE TRIGGER update_content_creators_updated_at BEFORE UPDATE ON content_creators FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_films_updated_at BEFORE UPDATE ON films FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_releases_updated_at BEFORE UPDATE ON music_releases FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_music_tracks_updated_at BEFORE UPDATE ON music_tracks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_books_updated_at BEFORE UPDATE ON books FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_visual_artworks_updated_at BEFORE UPDATE ON visual_artworks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_content_taggings_updated_at BEFORE UPDATE ON content_taggings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Функции для денормализации (обновлены)
+
+-- Для films.embedded_directors
+CREATE OR REPLACE FUNCTION update_film_directors() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE films 
+    SET embedded_directors = COALESCE((
+        SELECT jsonb_agg(jsonb_build_object('id', cc.id, 'slug', cc.slug, 'full_name', cc.full_name))
+        FROM film_director_associations fda 
+        JOIN content_creators cc ON fda.creator_id = cc.id 
+        WHERE fda.film_id = COALESCE(NEW.film_id, OLD.film_id)
+    ), '[]'::JSONB)
+    WHERE id = COALESCE(NEW.film_id, OLD.film_id);
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_film_directors 
+AFTER INSERT OR UPDATE OR DELETE ON film_director_associations 
+FOR EACH ROW EXECUTE FUNCTION update_film_directors();
+
+-- Для music_releases.embedded_artists
+CREATE OR REPLACE FUNCTION update_music_artist_associations() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE music_releases 
+    SET embedded_artists = COALESCE((
+        SELECT jsonb_agg(jsonb_build_object('id', cc.id, 'slug', cc.slug, 'full_name', cc.full_name))
+        FROM music_artist_associations maa 
+        JOIN content_creators cc ON maa.creator_id = cc.id 
+        WHERE maa.release_id = COALESCE(NEW.release_id, OLD.release_id)
+    ), '[]'::JSONB)
+    WHERE id = COALESCE(NEW.release_id, OLD.release_id);
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_music_artist_associations 
+AFTER INSERT OR UPDATE OR DELETE ON music_artist_associations 
+FOR EACH ROW EXECUTE FUNCTION update_music_artist_associations();
+
+-- Для books.embedded_authors
+CREATE OR REPLACE FUNCTION update_book_authors() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE books 
+    SET embedded_authors = COALESCE((
+        SELECT jsonb_agg(jsonb_build_object('id', cc.id, 'slug', cc.slug, 'full_name', cc.full_name))
+        FROM book_author_associations baa 
+        JOIN content_creators cc ON baa.creator_id = cc.id 
+        WHERE baa.book_id = COALESCE(NEW.book_id, OLD.book_id)
+    ), '[]'::JSONB)
+    WHERE id = COALESCE(NEW.book_id, OLD.book_id);
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_book_authors 
+AFTER INSERT OR UPDATE OR DELETE ON book_author_associations 
+FOR EACH ROW EXECUTE FUNCTION update_book_authors();
+
+-- Для visual_artworks.embedded_artists
+CREATE OR REPLACE FUNCTION update_artwork_artists() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE visual_artworks 
+    SET embedded_artists = COALESCE((
+        SELECT jsonb_agg(jsonb_build_object('id', cc.id, 'slug', cc.slug, 'full_name', cc.full_name))
+        FROM artwork_artist_associations aaa 
+        JOIN content_creators cc ON aaa.creator_id = cc.id 
+        WHERE aaa.artwork_id = COALESCE(NEW.artwork_id, OLD.artwork_id)
+    ), '[]'::JSONB)
+    WHERE id = COALESCE(NEW.artwork_id, OLD.artwork_id);
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_artwork_artists 
+AFTER INSERT OR UPDATE OR DELETE ON artwork_artist_associations 
+FOR EACH ROW EXECUTE FUNCTION update_artwork_artists();
+
+-- Триггер для обновления при изменениях в content_creators (full_name/slug)
+CREATE OR REPLACE FUNCTION propagate_creator_changes() RETURNS TRIGGER AS $$
+BEGIN
+    -- Обновляем все связанные films (перестройка JSONB)
+    UPDATE films 
+    SET embedded_directors = (
+        SELECT jsonb_agg(jsonb_build_object('id', cc.id, 'slug', cc.slug, 'full_name', cc.full_name))
+        FROM film_director_associations fda JOIN content_creators cc ON fda.creator_id = cc.id
+        WHERE fda.film_id = films.id
+    )
+    WHERE films.id IN (SELECT film_id FROM film_director_associations WHERE creator_id = NEW.id);
+    
+    -- Аналогично для music_releases, books, visual_artworks (расширь по необходимости)
+    -- ... (добавь UPDATE для других)
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_propagate_creator_changes 
+AFTER UPDATE OF full_name, slug ON content_creators 
+FOR EACH ROW EXECUTE FUNCTION propagate_creator_changes();
+
+-- Индексы (обновлены под новые имена)
+CREATE INDEX idx_content_creators_segment_id ON content_creators(segment_id);
+CREATE INDEX idx_content_creators_slug ON content_creators(slug);
+CREATE INDEX idx_films_segment_id ON films(segment_id);
+CREATE INDEX idx_films_slug ON films(slug);
+CREATE INDEX idx_films_embedded_directors_gin ON films USING GIN (embedded_directors);
+CREATE INDEX idx_music_releases_segment_id ON music_releases(segment_id);
+CREATE INDEX idx_music_releases_slug ON music_releases(slug);
+CREATE INDEX idx_music_releases_embedded_artists_gin ON music_releases USING GIN (embedded_artists);
+CREATE INDEX idx_music_tracks_release_id ON music_tracks(release_id);
+CREATE INDEX idx_books_segment_id ON books(segment_id);
+CREATE INDEX idx_books_slug ON books(slug);
+CREATE INDEX idx_books_embedded_authors_gin ON books USING GIN (embedded_authors);
+CREATE INDEX idx_visual_artworks_segment_id ON visual_artworks(segment_id);
+CREATE INDEX idx_visual_artworks_slug ON visual_artworks(slug);
+CREATE INDEX idx_visual_artworks_embedded_artists_gin ON visual_artworks USING GIN (embedded_artists);
+CREATE INDEX idx_content_taggings_topic_id ON content_taggings(topic_id);
+CREATE INDEX idx_content_taggings_type_id ON content_taggings(taggable_type, taggable_id);
+
+-- Индексы для soft deletes
+CREATE INDEX idx_films_deleted_at ON films(deleted_at) WHERE deleted_at IS NULL;
+-- Аналогично для других таблиц (добавь по необходимости)

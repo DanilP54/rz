@@ -1,0 +1,207 @@
+---
+description: Enforce Clean Domain Architecture in Refactoring
+globs: *.ts,*.tsx,*.js,*.jsx
+alwaysApply: false
+---
+
+# Enforce Clean Domain Architecture in Refactoring
+
+**Purpose**
+During refactoring, prioritize clear domain modeling, loose coupling, and separation of concerns to make code maintainable, testable, and aligned with business requirements. Focus on interactions over folder structure; use ubiquitous language and explicit states to reduce ambiguity.
+
+## Key Recommendations
+
+### 1) Use Ubiquitous Language for Domain Clarity
+
+Align code terms with stakeholder/business terminology and use one consistent term per concept.
+
+Bad
+
+```jsx
+const isMerchant = (user) => user.role === "seller";
+const SellerPanel = ({ user }) => isMerchant(user) && <main>{/*...*/}</main>;
+```
+
+Good
+
+```jsx
+const isSeller = (user) => user.role === "seller";
+const SellerPanel = ({ user }) => isSeller(user) && <main>{/*...*/}</main>;
+```
+
+Tips
+
+- Prefer consistent, domain-approved nouns (e.g., “seller” vs “merchant”).
+- Rename variables/functions to match domain language before deeper refactors.
+- Cross-reference: naming guidance in [naming-clarity-consistency.mdc](mdc:.cursor/rules/naming-clarity-consistency.mdc).
+
+### 2) Model Domain States Explicitly
+
+Represent lifecycle as explicit states and pure transformations, not flags scattered on one object.
+
+Bad
+
+```js
+function composeAuction(user, from, to, products, startPrice, invited) {
+  return {
+    created: true,
+    author: user,
+    timeRange: { from, to },
+    lots: products.map(lotFromProduct),
+    price: startPrice,
+    participants: invited.filter(accepted),
+    winners: [],
+    bids: [],
+    bestBid: null,
+    open: false,
+    expired: false,
+    cancelled: false,
+    closedLots: null,
+  };
+}
+```
+
+Good
+
+```js
+const STATUS = {
+  created: "created",
+  active: "active",
+  expired: "expired",
+} as const;
+
+const createAuction = (author, from, to, lots, startPrice) => ({
+  author,
+  timeRange: { from, to },
+  lots,
+  price: startPrice,
+  status: STATUS.created,
+});
+
+const startAuction = (auction) => ({
+  ...auction,
+  participants: auction.participants.filter(accepted),
+  currentLot: auction.lots.find(available),
+  status: STATUS.active,
+});
+
+const expireAuction = (auction) => {
+  const { currentLot, ...rest } = auction;
+  return {
+    ...rest,
+    closedLots: auction.lots.filter(isClosed),
+    status: STATUS.expired,
+  };
+};
+```
+
+Tips
+
+- Prefer tagged unions/enums for `status`.
+- Transform via small pure functions; avoid mutating shared objects.
+
+### 3) Decouple External Interactions with Anti-Corruption Layers
+
+Keep domain models independent from external APIs, SDKs, or persistence schemas.
+
+Bad
+
+```js
+const createOrder = (user, products) => ({ user, products });
+
+const sendOrder = async (order) => {
+  await fetch("/api/orders/", { method: "POST", body: JSON.stringify(order) });
+};
+```
+
+Good
+
+```js
+// Domain → DTO adapter
+const toServerOrder = (order) => {
+  // perform shape transformation/normalization
+  return {
+    userId: order.user.id,
+    items: order.products.map(({ id, qty }) => ({
+      productId: id,
+      quantity: qty,
+    })),
+  };
+};
+
+const sendOrder = async (order) => {
+  const dto = toServerOrder(order);
+  await fetch("/api/orders/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+};
+```
+
+Tips
+
+- Use ports/adapters (interfaces + mappers) to isolate domain from infra.
+- Keep third-party types at the edges; map to internal types early.
+
+### 4) Separate UI Logic from Domain
+
+Keep domain data pure; compose UI state in view-models/components.
+
+Bad
+
+```js
+const cart = { products: list, user, isExpanded: true };
+```
+
+Good
+
+```js
+const cart = { user, products: list }; // domain
+const cartView = { isExpanded: true }; // UI state
+const cartUi = { ...cart, ...cartView }; // composition at UI layer
+```
+
+Tips
+
+- Domain modules: no React/Tailwind/DOM.
+- UI layer may derive data from domain but never mutate domain models directly.
+
+## Enforcement Tips
+
+- **Apply the Impureim Sandwich**
+  - Impure inputs (I/O, UI, network) → pure domain transformations → impure outputs (effects).
+- **Use Ports/Adapters**
+  - Define domain ports (interfaces) and implement adapters per environment (web, server).
+- **Test Pyramid**
+  - Unit test domain (pure functions).
+  - Integration test adapters (contract tests with fake infra).
+  - E2E test use cases (happy paths + critical edge cases).
+- **Right-size the effort**
+  - Strongly enforce for long-lived/core flows.
+  - Be pragmatic for prototypes/spikes; refactor later if adopted.
+
+## Refactoring Workflow (Checklist)
+
+1. Identify domain concept and adopt stakeholder terminology.
+2. Extract pure domain functions and explicit `status`/state models.
+3. Introduce ports for outward interactions; write adapters to map to/from DTOs.
+4. Separate UI state from domain; pass domain data into views as props.
+5. Add unit tests for domain and contract tests for adapters.
+6. Remove incidental duplication; centralize true duplication.
+   - See [handle-code-duplication.mdc](mdc:.cursor/rules/handle-code-duplication.mdc).
+
+## Common Smells → Targeted Fix
+
+- **Mixed terms (“seller” vs “merchant”)** → unify terminology; rename APIs/types.
+- **Flag soup on objects** → introduce explicit `status` and state-specific types/functions.
+- **Domain uses `fetch`/SDK directly** → move I/O to adapter; add mapper functions.
+- **React state inside domain models** → move to component/view-model.
+- **Untestable business logic** → extract pure functions; inject ports.
+
+## Do / Don’t
+
+- Do: model domain first; keep it framework-agnostic.
+- Do: isolate effects; compose them at boundaries.
+- Don’t: leak API schemas into core domain.
+- Don’t: couple UI state with domain models.

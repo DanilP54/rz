@@ -1,0 +1,47 @@
+---
+alwaysApply: false
+globs: *.ts,*.tsx,*.js,*.jsx
+description: Handle Code Duplication Wisely
+---
+
+## Handle Code Duplication Wisely
+
+Not all duplication is bad.
+
+- **Direct duplication**: Same purpose, same data, same effect → extract into variables, functions, or modules.
+- **Incidental similarity**: Looks similar but unclear if the behavior is truly the same → wait, observe, and annotate with `@duplicate` for later review.
+
+### Bad Practice
+
+```javascript
+// Two similar but repeated code blocks
+const discount = (order.total * percent) / 100;
+const discounted = { ...order, discount };
+
+const anotherDiscount = (order.total * percent) / 100;
+const anotherDiscounted = { ...order, discount: anotherDiscount };
+```
+
+### Good Practice
+
+```javascript
+function applyDiscount(order, percent) {
+  const discount = (order.total * percent) / 100;
+  return { ...order, discount };
+}
+```
+
+Or, when duplication is not yet clearly the same behavior, mark and revisit:
+
+```javascript
+/** @duplicate Applies a coupon discount */
+function applyCoupon(order, coupon) {}
+
+/** @duplicate Applies a manual discount */
+function applyDiscount(order, discount) {}
+```
+
+### Summary
+
+- **Remove duplication only when certain** it represents the same behavior and domain concept.
+- Otherwise, **document with `@duplicate`** and revisit after gaining more domain knowledge.

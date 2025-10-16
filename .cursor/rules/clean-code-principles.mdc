@@ -1,0 +1,126 @@
+---
+alwaysApply: false
+---
+# Clean Code Principles: Reduce Cognitive Load and Code Noise
+
+## Core Goal
+
+Separate intent from implementation to reduce cognitive load and code noise.
+
+## Key Principles
+
+### 1. Separate Intent from Implementation
+
+- **Function names** express **what** the code does
+- **Function bodies** express **how** it does it
+- Never mix "what" and "how" in the same function
+
+### 2. Keep One Level of Abstraction Per Function
+
+- Don't mix low-level technical details with high-level domain concepts
+- Extract details into smaller functions if levels are mixed
+- Each function should speak in one "language"
+
+### 3. Use Fractal (Layered) Structure
+
+- Each level should have a limited number of parts (~7±2)
+- Each level tells a "story": what happens at this layer
+- Maintain consistent abstraction levels within each layer
+
+### 4. Apply Separation of Concerns (SoC)
+
+- Each part handles one task that's cohesive within itself
+- Follow the Single Responsibility Principle (SRP)
+- Code that changes for different reasons belongs in different places
+- Code that changes for the same reason belongs together
+
+### 5. Encapsulate Internal Details
+
+- Modules guarantee their own validity and expose only public APIs
+- Never mutate another module's internal data directly
+- Hide implementation details behind clear interfaces
+
+## Examples
+
+### ❌ Bad Example (Mixed Abstraction Levels)
+
+```typescript
+function subscribeToFeed(email: string) {
+  if (!email.includes("@") || !email.includes(".")) return false; // low-level details
+  const recipients = addRecipient(email); // high-level concept
+  confirmFeedSubscription(recipients);
+}
+```
+
+**Why bad:**
+
+- Mixes character-level validation ("@", ".") with business logic
+- Reader must constantly "zoom" between levels of detail
+- Violates single level of abstraction principle
+
+### ✅ Good Example (Clear Intent and Proper Abstraction)
+
+```typescript
+const isValidEmail = (email: string): boolean => {
+  return email.includes("@") && email.includes(".");
+};
+
+const subscribeToFeed = (email: string): boolean => {
+  if (!isValidEmail(email)) return false; // clear intent
+  const recipients = addRecipient(email);
+  confirmFeedSubscription(recipients);
+  return true;
+};
+```
+
+**Why good:**
+
+- Each function speaks at a single level of abstraction
+- The top-level function tells the story of what happens
+- Implementation details are encapsulated inside smaller functions
+- Clear separation between validation logic and business logic
+
+## Implementation Guidelines
+
+### Function Naming
+
+- Use verbs for actions: `validateEmail`, `processPayment`, `sendNotification`
+- Use descriptive names that express intent: `isValidEmail` not `checkEmail`
+- Avoid technical jargon in function names when possible
+
+### Function Structure
+
+- Keep functions small and focused
+- Use early returns to reduce nesting
+- Extract complex conditions into well-named functions
+- One concept per function
+
+### Module Organization
+
+- Group related functionality together
+- Expose minimal, clear public APIs
+- Hide implementation details
+- Use dependency injection for external dependencies
+
+### Error Handling
+
+- Handle errors at the appropriate abstraction level
+- Don't let low-level errors leak into high-level functions
+- Use meaningful error messages that explain the business impact
+
+## Code Review Checklist
+
+When reviewing code, ask:
+
+1. **Intent vs Implementation**: Does the function name clearly express what it does?
+2. **Abstraction Level**: Is there only one level of abstraction in this function?
+3. **Single Responsibility**: Does this function do one thing well?
+4. **Encapsulation**: Are implementation details properly hidden?
+5. **Readability**: Can I understand what this code does without reading the implementation?
+
+## TL;DR
+
+- Each function should talk in one language — either **what** or **how**, never both
+- Abstract low-level details, name things by their intent
+- Keep modules independent and focused
+- Separate concerns to reduce cognitive load

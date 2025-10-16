@@ -1,0 +1,108 @@
+---
+globs: *ts,*tsx
+alwaysApply: false
+---
+# TypeScript Generic Functions and 'any' Usage
+
+When building generic functions, you may need to use `any` inside the function body. This is because TypeScript often cannot match your runtime logic to the logic done inside your types.
+
+## The Problem
+
+TypeScript's type system sometimes cannot understand the relationship between runtime conditions and conditional types:
+
+```ts
+// This will cause TypeScript errors
+const youSayGoodbyeISayHello = <TInput extends "hello" | "goodbye">(
+  input: TInput
+): TInput extends "hello" ? "goodbye" : "hello" => {
+  if (input === "goodbye") {
+    return "hello"; // Error! Type '"hello"' is not assignable to type 'TInput extends "hello" ? "goodbye" : "hello"'
+  } else {
+    return "goodbye"; // Error! Type '"goodbye"' is not assignable to type 'TInput extends "hello" ? "goodbye" : "hello"'
+  }
+};
+```
+
+## The Solution
+
+Use `any` type assertion when TypeScript cannot understand the runtime-to-type relationship:
+
+```ts
+// GOOD - Using 'any' type assertion
+const youSayGoodbyeISayHello = <TInput extends "hello" | "goodbye">(
+  input: TInput
+): TInput extends "hello" ? "goodbye" : "hello" => {
+  if (input === "goodbye") {
+    return "hello" as any;
+  } else {
+    return "goodbye" as any;
+  }
+};
+```
+
+## Guidelines
+
+1. **Use `any` sparingly** - Only use `any` when TypeScript's type system cannot understand the runtime logic
+2. **Prefer type assertions** - Use `as any` rather than declaring variables as `any`
+3. **Document the reason** - Add comments explaining why `any` is necessary
+4. **Outside generic functions** - Use `any` extremely sparingly outside of generic function contexts
+5. **Consider alternatives** - Before using `any`, consider if function overloads or other type patterns might work
+
+## Example with Documentation
+
+```ts
+const processInput = <T extends string>(
+  input: T
+): T extends "start" ? "end" : "start" => {
+  // TypeScript cannot understand that this runtime check matches the conditional type
+  // Using 'any' is the most concise solution here
+  if (input === "start") {
+    return "end" as any; // Type assertion needed due to conditional type complexity
+  } else {
+    return "start" as any; // Type assertion needed due to conditional type complexity
+  }
+};
+```
+
+## When NOT to Use 'any'
+
+- For simple type mismatches that can be fixed with proper typing
+- When you can use function overloads instead
+- When the type can be properly inferred with better type definitions
+- As a quick fix for complex but solvable type issues
+
+## Alternative Approaches
+
+Before resorting to `any`, consider these alternatives:
+
+### Function Overloads
+
+```ts
+function processInput(input: "start"): "end";
+function processInput(input: "end"): "start";
+function processInput(input: string): "start" | "end" {
+  if (input === "start") {
+    return "end";
+  } else {
+    return "start";
+  }
+}
+```
+
+### Type Guards
+
+```ts
+const isStart = (input: string): input is "start" => input === "start";
+
+const processInput = <T extends string>(
+  input: T
+): T extends "start" ? "end" : "start" => {
+  if (isStart(input)) {
+    return "end" as any;
+  } else {
+    return "start" as any;
+  }
+};
+```
+
+Remember: `any` should be your last resort, not your first solution.

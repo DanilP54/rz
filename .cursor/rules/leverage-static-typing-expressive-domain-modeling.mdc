@@ -1,0 +1,187 @@
+---
+description: Leverage Static Typing for Expressive Domain Modeling
+globs: *.ts,*.tsx
+---
+
+## Purpose
+
+Use static typing as a refactoring tool to encode domain knowledge, enforce constraints, and reveal design flaws early. Model business processes via types for clarity, prevent invalid states, and create self-documenting APIs without over-relying on primitives.
+
+## Key Recommendations
+
+### 1) Replace Primitives with Domain Types (Ubiquitous Language)
+
+Avoid primitive obsession. Prefer descriptive, branded domain types that convey meaning.
+
+Bad — primitives lack domain intent:
+
+```ts
+type Account = {
+  date: string;
+  user: number;
+  value: number;
+};
+```
+
+Good — domain types add meaning:
+
+```ts
+// Branded primitives
+type Tagged<T, Brand extends string> = T & { readonly __brand: Brand };
+
+type DateTimeIso = Tagged<string, "DateTimeIso">;
+type UserId = Tagged<string, "UserId">;
+type MoneyAmount = Tagged<number, "MoneyAmount">;
+
+type Account = {
+  date: DateTimeIso;
+  user: UserId;
+  value: MoneyAmount;
+};
+```
+
+Factory helpers ensure correct construction at the boundaries:
+
+```ts
+const asDateTimeIso = (value: string): DateTimeIso => {
+  // minimal check; strengthen as needed
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.?\d*Z$/.test(value)) {
+    throw new Error("Invalid DateTime ISO format");
+  }
+  return value as DateTimeIso;
+};
+
+const asUserId = (value: string): UserId => {
+  if (!value) throw new Error("UserId must be non-empty");
+  return value as UserId;
+};
+
+const asMoneyAmount = (value: number): MoneyAmount => {
+  if (!Number.isFinite(value)) throw new Error("MoneyAmount must be finite");
+  return value as MoneyAmount;
+};
+```
+
+### 2) Model Domain States and Processes Explicitly
+
+Define distinct types for states and transformations to catch invalid flows early.
+
+Bad — single type allows invalid operations (e.g., recover on unverified user):
+
+```ts
+type User = { id: string; verified?: boolean };
+
+async function sendRecoverLink(user: User) {
+  if (!user.verified) return false; // mixed command/query smell
+  await api.recoverPassword(user.id);
+}
+```
+
+Good — separate states enforce valid flows:
+
+```ts
+type CreatedUser = { id: UserId; name: string };
+type VerifiedUser = { id: UserId; name: string; verified: true };
+
+type User = CreatedUser | VerifiedUser;
+
+type VerifyUser = (user: CreatedUser) => Promise<VerifiedUser>;
+type RecoverPassword = (user: VerifiedUser) => Promise<void>;
+
+const sendRecoverLink: RecoverPassword = async (user) => {
+  await api.recoverPassword(user.id);
+};
+
+// sendRecoverLink(unverifiedUser) // Type error
+```
+
+### 3) Enforce Constraints with Branded Types or Classes
+
+Validate and prevent invalid domain values at construction time.
+
+Bad — aliases allow runtime errors like division by zero:
+
+```ts
+type RealNumber = number;
+type NaturalNumber = number; // no guarantees
+
+const divide = (a: number, b: number) => a / b;
+// divide(1, 0) // runtime error
+```
+
+Good — branded types with factory validation:
+
+```ts
+type Tagged<T, Brand extends string> = T & { readonly __brand: Brand };
+type RealNumber = Tagged<number, "RealNumber">;
+type NaturalNumber = Tagged<number, "NaturalNumber">;
+
+const asNaturalNumber = (value: number): NaturalNumber => {
+  if (!Number.isFinite(value) || value <= 0 || Math.floor(value) !== value) {
+    throw new Error("Value must be a positive integer");
+  }
+  return value as NaturalNumber;
+};
+
+const asRealNumber = (value: number): RealNumber => {
+  if (!Number.isFinite(value)) throw new Error("Value must be finite");
+  return value as RealNumber;
+};
+
+const divide = (a: NaturalNumber, b: NaturalNumber): RealNumber => {
+  if (b === (0 as NaturalNumber)) throw new Error("Division by zero");
+  return asRealNumber(a / b);
+};
+```
+
+### 4) Design Expressive APIs with “Strike-Through” Signatures
+
+Test API clarity by anonymizing names; refine until the signature reveals intent.
+
+Bad — opaque signature hides purpose:
+
+```ts
+async function getPostContents(user: number, post: string): Promise<string> {
+  // ...
+}
+// Strike-through: function xxx(xxx: number, xxx: string): Promise<string> {}
+```
+
+Good — clear types and names self-document:
+
+```ts
+type PostSlug = Tagged<string, "PostSlug">;
+type PostContents = Tagged<string, "PostContents">;
+
+async function fetchPost(
+  authorId: UserId,
+  post: PostSlug
+): Promise<PostContents> {
+  // ...
+  return "...contents..." as PostContents;
+}
+// Strike-through: function xxx(xxx: UserId, xxx: PostSlug): Promise<PostContents> {}
+```
+
+## Enforcement Tips
+
+- Model processes as type signatures first. Example: `type CreateOrder = (userId: UserId, products: ProductList) => Promise<CreatedOrder>`.
+- Prefer branded types for validation; use classes only for complex invariants and methods.
+- Detect CQS violations: a return like `false | void` signals mixed query/command — separate them or use `try*` style results.
+- Apply during refactors and long-lived code; skip for throwaway prototypes where iteration speed dominates.
+- Keep construction at boundaries (I/O, parsing, API) and keep domain pure; validate once and trust branded types inside.
+
+## How to Adopt Incrementally
+
+1. Introduce brands for the most error-prone primitives (IDs, money, dates).
+2. Split one intertwined type into explicit state variants.
+3. Push validation to constructors/factories and remove scattered checks.
+4. Rename APIs until strike-through signatures remain clear.
+
+## Code Review Checklist
+
+- Are primitives replaced by meaningful domain types where appropriate?
+- Are invalid states unrepresentable through explicit state types?
+- Are constraints enforced at construction via brands/factories?
+- Do function signatures communicate intent without relying on names?
+- Are commands and queries separated (no ambiguous falsy returns)?
