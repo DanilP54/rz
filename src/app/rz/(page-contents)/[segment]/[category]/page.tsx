@@ -36,7 +36,7 @@ export default async function Page(props: PageProps) {
   
   const contentListPromise = getContent(segment, category, { ...searchParams });
 
-  const { rules, options } = getFilters(segment, category)
+  const { rules, options } =  getFilters(segment, category)
   
   return (
     <div
