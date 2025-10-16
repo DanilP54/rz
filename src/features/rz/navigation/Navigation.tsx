@@ -1,3 +1,5 @@
+"use client"
+
 import { NavSegments } from "@/shared/model/routes";
 import { useSelectedLayoutSegment, usePathname } from "next/navigation";
 import { useEffect } from "react";
