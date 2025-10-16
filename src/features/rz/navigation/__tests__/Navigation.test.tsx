@@ -1,5 +1,12 @@
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { NavSegments, ROUTES, SegmentCategory } from "@/shared/model/routes";
 import { renderComponent } from "@/test-utils";
 import { NavHintsTestObject } from "./hints-component";
@@ -21,7 +28,6 @@ vi.mock("next/navigation", () => ({
 const mockUseSelectedLayoutSegment = vi.mocked(useSelectedLayoutSegment);
 const mockUsePathname = vi.mocked(usePathname);
 
-
 const simulateRouteChange = <Segment extends NavSegments>(
   segment: Segment,
   content: SegmentCategory<Segment>
@@ -37,26 +43,24 @@ const simulateRouteToIndex = () => {
   mockUsePathname.mockReturnValue(ROUTES.rz.root);
 };
 
-
 describe("Navigation Component", () => {
-
   const ALL_PANEL_SEGMENTS = Object.keys(config.panels) as NavSegments[];
   const TEST_PANEL_CONFIG = config.panels.intellect;
   const TEST_SEGMENT = TEST_PANEL_CONFIG.segmentName;
-  const INTRO_HINT_STORAGE_KEY = 'intro';
+  const INTRO_HINT_STORAGE_KEY = "intro";
 
   let navHints: NavHintsTestObject;
 
-  const event = userEvent.setup()
+  const event = userEvent.setup();
 
   afterEach(() => {
     vi.clearAllMocks();
-    storageAdapter().clear()
+    storageAdapter().clear();
   });
 
   afterAll(() => {
-    vi.restoreAllMocks()
-  })
+    vi.restoreAllMocks();
+  });
 
   describe("Disclosure Panel Behavior", () => {
     let disclosurePanel: DisclosureNavPanelTestObject;
@@ -82,12 +86,13 @@ describe("Navigation Component", () => {
     });
 
     it("should render the correct number of links", () => {
-      expect(disclosurePanel.countNumberOfLinks()).toEqual(TEST_PANEL_CONFIG.links.length);
+      expect(disclosurePanel.countNumberOfLinks()).toEqual(
+        TEST_PANEL_CONFIG.links.length
+      );
     });
   });
 
   describe("First Visit Behavior", () => {
-
     describe("On Index Route", () => {
       beforeEach(() => {
         simulateRouteToIndex();
@@ -120,7 +125,7 @@ describe("Navigation Component", () => {
       // Разбили один большой тест на несколько маленьких, сфокусированных
       // Общая подготовка для всех тестов в этом блоке
       beforeEach(() => {
-        pathname = simulateRouteChange(TEST_SEGMENT, 'books');
+        pathname = simulateRouteChange(TEST_SEGMENT, "books");
         renderComponent(<Navigation isMobileDevice />);
         selectedPanel = new SelectedNavPanelTestObject(TEST_SEGMENT);
         navHints = new NavHintsTestObject(config.intro.text);
@@ -147,7 +152,9 @@ describe("Navigation Component", () => {
 
       it("should display the segment-specific hint and hide the intro hint", async () => {
         await waitFor(() => {
-          expect(navHints.getHintText(TEST_PANEL_CONFIG.hintText)).toBeInTheDocument();
+          expect(
+            navHints.getHintText(TEST_PANEL_CONFIG.hintText)
+          ).toBeInTheDocument();
           expect(navHints.getIntroHintText()).not.toBeInTheDocument();
         });
       });
@@ -164,9 +171,11 @@ describe("Navigation Component", () => {
       expect(storageAdapter().get()).toEqual([]);
 
       // Test 2: Navigate to a segment, both segment and intro key are stored
-      simulateRouteChange(TEST_SEGMENT, 'movies');
+      simulateRouteChange(TEST_SEGMENT, "movies");
       rerender(<Navigation isMobileDevice />);
-      expect(storageAdapter().get()).toEqual(expect.arrayContaining([INTRO_HINT_STORAGE_KEY, TEST_SEGMENT]));
+      expect(storageAdapter().get()).toEqual(
+        expect.arrayContaining([INTRO_HINT_STORAGE_KEY, TEST_SEGMENT])
+      );
       expect(storageAdapter().get()).toHaveLength(2);
     });
   });
@@ -174,13 +183,15 @@ describe("Navigation Component", () => {
   describe("Repeat Visit Behavior", () => {
     it("should not display a hint for a previously visited segment", async () => {
       storageAdapter().update([TEST_SEGMENT]);
-      simulateRouteChange(TEST_SEGMENT, 'movies');
+      simulateRouteChange(TEST_SEGMENT, "movies");
       renderComponent(<Navigation isMobileDevice />);
       navHints = new NavHintsTestObject(config.intro.text);
 
       // Ждём, чтобы убедиться, что hint не появился асинхронно
       await waitFor(() => {
-        expect(navHints.getHintText(TEST_PANEL_CONFIG.hintText)).not.toBeInTheDocument();
+        expect(
+          navHints.getHintText(TEST_PANEL_CONFIG.hintText)
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -200,24 +211,34 @@ describe("Navigation Component", () => {
   describe("Inter-Panel Interactions", () => {
     it("should collapse an open disclosure panel when navigating within the selected panel", async () => {
       // 1. Находимся на странице сегмента (intellect)
-      simulateRouteChange(TEST_PANEL_CONFIG.segmentName, 'music');
+      simulateRouteChange(TEST_PANEL_CONFIG.segmentName, "music");
       const { rerender } = renderComponent(<Navigation isMobileDevice />);
 
-      const selectedPanel = new SelectedNavPanelTestObject(TEST_PANEL_CONFIG.segmentName);
+      const selectedPanel = new SelectedNavPanelTestObject(
+        TEST_PANEL_CONFIG.segmentName
+      );
       const otherPanelSegment = config.panels.instincts.segmentName;
-      const disclosurePanel = new DisclosureNavPanelTestObject(otherPanelSegment);
+      const disclosurePanel = new DisclosureNavPanelTestObject(
+        otherPanelSegment
+      );
 
       // 2. Открываем другую панель (instincts)
       await disclosurePanel.clickTrigger(event.click);
-      expect(disclosurePanel.isExpanded(), "Disclosure panel should be expanded initially").toBe(true);
+      expect(
+        disclosurePanel.isExpanded(),
+        "Disclosure panel should be expanded initially"
+      ).toBe(true);
 
       // 3. Кликаем на ссылку в "selected" панели (intellect)
-      await selectedPanel.selectCategory('books', event.click);
-      simulateRouteChange(TEST_PANEL_CONFIG.segmentName, 'books');
+      await selectedPanel.selectCategory("books", event.click);
+      simulateRouteChange(TEST_PANEL_CONFIG.segmentName, "books");
       rerender(<Navigation isMobileDevice />);
 
       // 4. Проверяем, что другая панель (instincts) закрылась
-      expect(disclosurePanel.isCollapsed(), "Disclosure panel should collapse after navigation").toBe(true);
+      expect(
+        disclosurePanel.isCollapsed(),
+        "Disclosure panel should collapse after navigation"
+      ).toBe(true);
     });
   });
 });

@@ -3,11 +3,11 @@ import { NavSegments } from "@/shared/model/routes";
 import { useState, useRef, useEffect, RefObject } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { DisclosurePanel } from "./_disclosure-panel";
-import { sortWithActiveItem } from "../lib/_sort-active-item";
-import { toastHintManager } from "../lib/_toast-hint-manager";
-import { useHintsStorage } from "../lib/_use-hints-storage";
+import { sortWithActiveItem } from "./lib/_sort-active-item";
+import { toastHintManager } from "./lib/_toast-hint-manager";
+import { useHintsStorage } from "./lib/_use-hints-storage";
 import { SelectedPanel } from "./_selected-panel";
-import { NavigationConfig } from "../types";
+import { NavigationConfig } from "./types";
 
 interface IPanels {
   config: NavigationConfig;
@@ -17,9 +17,11 @@ interface IPanels {
 }
 
 export function Panels(props: IPanels) {
-  const { config, currentPathname, selectedRouteSegment, isMobileDevice } = props;
+  const { config, currentPathname, selectedRouteSegment, isMobileDevice } =
+    props;
 
-  const [expandedDiscPanel, setExpandedDiscPanel] = useState<NavSegments | null>(null);
+  const [expandedDiscPanel, setExpandedDiscPanel] =
+    useState<NavSegments | null>(null);
   const storage = useHintsStorage();
   const toast = toastHintManager();
   const navElementRef = useRef<HTMLDivElement | null>(null);

@@ -1,6 +1,10 @@
-export type NavSegments = typeof NAV_SEGMENTS[keyof typeof NAV_SEGMENTS];
-export type SegmentCategory<S extends NavSegments> = (typeof SEGMENT_CATEGORIES)[S][number];
-export type SegmentRoutes<S extends NavSegments> = Record<SegmentCategory<S>, string>;
+export type NavSegments = (typeof NAV_SEGMENTS)[keyof typeof NAV_SEGMENTS];
+export type SegmentCategory<S extends NavSegments> =
+  (typeof SEGMENT_CATEGORIES)[S][number];
+export type SegmentRoutes<S extends NavSegments> = Record<
+  SegmentCategory<S>,
+  string
+>;
 
 export const NAV_SEGMENTS = {
   INSTINCTS: "instincts",
@@ -25,6 +29,13 @@ export const ROUTES = {
   },
 } as const;
 
+export function getSegmentRoutePath<S extends NavSegments>(
+  segment: NavSegments,
+  category: SegmentCategory<S>
+) {
+  return ROUTES.rz[segment][category];
+}
+
 function buildRZSegmentRoutes<S extends NavSegments>(
   segment: S
 ): SegmentRoutes<S> {
@@ -36,7 +47,9 @@ function buildRZSegmentRoutes<S extends NavSegments>(
   ) as SegmentRoutes<S>;
 }
 
-export const getRzRoute = <S extends NavSegments>(segment: S, category: SegmentCategory<S>) => {
+export const getRzRoute = <S extends NavSegments>(
+  segment: S,
+  category: SegmentCategory<S>
+) => {
   return ROUTES.rz[segment][category];
-}
-
+};

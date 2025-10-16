@@ -1,9 +1,8 @@
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel, NavLink } from "../types";
+import { Panel as TPanel, NavLink } from "./types";
 import { For } from "@/shared/For";
-import { sortWithActiveItem } from "../lib/_sort-active-item";
-
+import { sortWithActiveItem } from "./lib/_sort-active-item";
 
 interface ISelectedPanel {
   panel: TPanel;
@@ -18,8 +17,7 @@ export function SelectedPanel({
   isMobileDevice = true,
   currentPath,
 }: ISelectedPanel) {
-
-  const {segmentName, links} = panel
+  const { segmentName, links } = panel;
   const backgroundColor = getColorOfSegment(segmentName);
 
   const sortedLinks = sortWithActiveItem<NavLink>({
@@ -27,15 +25,15 @@ export function SelectedPanel({
     isActive: (link) => link.href === currentPath,
     move: {
       when: isMobileDevice,
-      then: 'start',
-      else: 'keep'
-    }
-  })
+      then: "start",
+      else: "keep",
+    },
+  });
 
   return (
     <div
       data-testid={`slc-panel-${segmentName}`}
-      data-selected={isSelected ? 'true' : undefined}
+      data-selected={isSelected ? "true" : undefined}
       className="group relative h-[40px]"
     >
       <ul
@@ -44,7 +42,7 @@ export function SelectedPanel({
         <For each={links}>
           {(link) => {
             const isActive = currentPath.includes(link.href);
-            const ariaCurrentAttribute = isActive ? 'page' : undefined
+            const ariaCurrentAttribute = isActive ? "page" : undefined;
             return (
               <li
                 key={link.href}

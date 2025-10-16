@@ -10,7 +10,7 @@ import { IntroHintDisplay } from "./ui/_intro-hint-display";
 import { config } from "./config/_config";
 
 export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
-  
+
   const selectedRouteSegment = useSelectedLayoutSegment() as Nullable<NavSegments>;
   const pathname = usePathname();
 
@@ -19,7 +19,7 @@ export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
     selectedRouteSegment,
     isMobileDevice
   );
-
+  
   useEffect(() => {
     // отвечает за отображение интро-подсказки в toast
     if (displayIntroHint.asToast) {
