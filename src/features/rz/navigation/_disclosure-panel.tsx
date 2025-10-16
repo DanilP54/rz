@@ -1,9 +1,9 @@
 import { For } from "@/shared/For";
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel } from "../types";
+import { Panel as TPanel } from "./types";
 
-export function DisclosureNavigationPanel({
+export function DisclosurePanel({
   panel,
   isExpanded,
   onToggle,
@@ -32,14 +32,14 @@ export function DisclosureNavigationPanel({
       ></button>
       <ul
         data-testid={`disc-link-list-${segment}`}
-        className={`${isVisibleClassName} ${bgColorPanel} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-2xl`}
+        className={`${isVisibleClassName} ${bgColorPanel} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-3xl`}
       >
         <For each={linksList}>
           {({ href, label }) => (
             <li key={href}>
               <Link
                 href={href}
-                className="flex items-center h-full w-full px-4"
+                className="flex items-center h-full w-full px-5"
               >
                 {label}
               </Link>

@@ -1,5 +1,5 @@
 import { Header } from "@/features/rz/Header";
-import { Navigation } from "@/features/rz/navigation";
+import { Navigation } from "@/features/rz/navigation/navigation";
 import React from "react";
 
 export default async function Layout({
@@ -7,7 +7,6 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <div
       className=" 

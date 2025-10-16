@@ -4,14 +4,14 @@ import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import { SideBarMobile } from "@/shared/SideBarMobile";
 import ThemeToggle from "@/shared/ThemeToggle";
 import { Menu } from "lucide-react";
-import { RZ_SEGMENTS } from "@/shared/model/routes";
+import { NavSegments } from "@/shared/model/routes";
 import React from "react";
 
 export default async function Layout({
     params,
     children,
 }: Readonly<{
-    params: Promise<{ segment: RZ_SEGMENTS }>,
+    params: Promise<{ segment: NavSegments }>,
     children: React.ReactNode;
 }>) {
     const { segment } = await params

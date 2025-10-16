@@ -3,14 +3,18 @@ import {
   InstinctsMovieFiltersBar,
   InstinctsArtFiltersBar,
   InstinctsBooksFiltersBar,
-} from "../instincts";
-import { IntellectMusicFiltersBar } from "../intellect";
+} from "../instincts-segment";
+import { IntellectMusicFiltersBar } from "../intellect-segment";
 import {
   NAV_SEGMENTS,
   NavSegments,
   SegmentCategory,
 } from "@/shared/model/routes";
 import { JSX } from "react";
+
+type Filters = {
+  [Segment in NavSegments]: Record<SegmentCategory<Segment>, JSX.Element>;
+}
 
 const filters = {
   [NAV_SEGMENTS.INSTINCTS]: {
@@ -31,9 +35,7 @@ const filters = {
     art: <h1>art</h1>,
     books: <h1>books</h1>,
   },
-} satisfies {
-  [Segment in NavSegments]: Record<SegmentCategory<Segment>, JSX.Element>;
-};
+} satisfies Filters;
 
 export function Filters({
   segment,

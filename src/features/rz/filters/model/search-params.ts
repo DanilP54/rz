@@ -1,25 +1,15 @@
 import { parseAsString, useQueryState } from "nuqs";
 
-export enum PARAMS {
-    AESTHETICS = 'eas',
-    SELFEXPRESSION = 'selfx',
-    CONCERTS = 'live',
-    DOCUMENTARY = 'doc',
-    BY_WORKS = 'by_works',
-    BY_CREATORS = 'by_creators',
-}
-
-export const CATEGORY_PARAMS = {
+export const PARAMS = {
     AESTHETICS: 'eas',
     SELFEXPRESSION: 'selfx',
     CONCERTS: 'live',
     DOCUMENTARY: 'doc',
-}
-
-export const TYPE_PARAMS = {
     BY_WORKS: 'by_works',
-    BY_CREATORS: 'by_creators'
-}
+    BY_CREATORS: 'by_creators',
+} as const;
+
+export type Params = typeof PARAMS[keyof typeof PARAMS]
 
 export const searchParams = {
     category: parseAsString.withDefault(''),
