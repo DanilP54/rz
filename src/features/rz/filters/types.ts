@@ -26,10 +26,10 @@ export type FilterOptionsByParams = {
 };
 
 // Schema types
-// export type CategorySchema = {
-//   rules: FiltersRules; // array of rule objects
-//   options: Readonly<FilterOptionsByParams>;
-// };
+export type CategorySchema = {
+  rules: FiltersRules; // array of rule objects
+  options: Readonly<FilterOptionsByParams>;
+};
 
 export type SegmentSchema<S extends NavSegments = NavSegments> = {
   [C in SegmentCategory<S>]: CategorySchema;
