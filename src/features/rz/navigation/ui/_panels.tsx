@@ -3,11 +3,11 @@ import { NavSegments } from "@/shared/model/routes";
 import { useState, useRef, useEffect, RefObject } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { DisclosurePanel } from "./_disclosure-panel";
-import { sortWithActiveItem } from "./lib/_sort-active-item";
-import { toastHintManager } from "./lib/_toast-hint-manager";
-import { useHintsStorage } from "./lib/_use-hints-storage";
+import { sortWithActiveItem } from "../lib/_sort-active-item";
+import { toastHintManager } from "../lib/_toast-hint-manager";
+import { useHintsStorage } from "../lib/_use-hints-storage";
+import { NavigationConfig } from "../types";
 import { SelectedPanel } from "./_selected-panel";
-import { NavigationConfig } from "./types";
 
 interface IPanels {
   config: NavigationConfig;

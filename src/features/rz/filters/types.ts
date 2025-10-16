@@ -11,7 +11,6 @@ export interface FilterRuleBase {
   readonly visibleIf?: (params: VisibilityParams) => boolean;
 }
 
-
 export type FiltersRules<TRule extends FilterRuleBase = FilterRuleBase> =
   ReadonlyArray<TRule>;
 

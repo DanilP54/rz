@@ -1,7 +1,7 @@
 import { For } from "@/shared/For";
 import { getColorOfSegment } from "@/shared/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel as TPanel } from "./types";
+import { Panel } from "../types";
 
 export function DisclosurePanel({
   panel,
@@ -9,7 +9,7 @@ export function DisclosurePanel({
   onToggle,
 }: {
   isExpanded: boolean;
-  panel: TPanel;
+  panel: Panel;
   onToggle: () => void;
 }) {
   const segment = panel.segmentName;
