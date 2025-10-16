@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { NavSegments, SegmentCategory } from "@/shared/model/routes";
 
 import { FiltersToggleGroup } from "./ui/FiltersToggleGroup";
@@ -17,8 +17,8 @@ interface IFiltersBar {
   segment: NavSegments;
   category: SegmentCategory<NavSegments>;
   isMobileDevice?: boolean;
-  rules: FiltersRules
-  options: Readonly<FilterOptionsByParams>
+  rules: FiltersRules;
+  options: Readonly<FilterOptionsByParams>;
 }
 
 export function FiltersBar({
@@ -26,9 +26,9 @@ export function FiltersBar({
   category,
   rules,
   options,
-  isMobileDevice
+  isMobileDevice,
 }: IFiltersBar) {
-
+  
   const { startTransition } = useTransitionContext();
 
   const [topic, updateTopic] = useTopicParams({

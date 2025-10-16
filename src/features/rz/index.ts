@@ -1,2 +1,2 @@
-export { Layout as RzLayout } from './layout'
-export { Header } from './header'
+export { RzLayout as Layout } from './rz-layout'
+export { RzHeader as Header } from './rz-header'

@@ -1,4 +1,4 @@
-import { Header } from "@/features/rz/header";
+import { RzHeader } from "@/features/rz/rz-header";
 import { Navigation } from "@/features/rz/navigation";
 
 import React from "react";
@@ -18,7 +18,7 @@ export default async function Layout({
       [&:has(#page[data-segment=intellect])_#header]:bg-intellect 
       [&:has(#page[data-segment=balance])_#header]:bg-balance"
     >
-      <Header />
+      <RzHeader />
       <Navigation isMobileDevice={true} />
       {children}
     </div>

@@ -11,17 +11,6 @@ export interface FilterRuleBase {
   readonly visibleIf?: (params: VisibilityParams) => boolean;
 }
 
-// export type ResetReason = "hide" | "dependencyChange";
-
-// export interface ResetContext {
-//   readonly key: FilterRuleKey;
-//   readonly reason: ResetReason;
-//   readonly params: VisibilityParams;
-// }
-
-// export interface AutoResetFilterRule extends FilterRuleBase {
-//   readonly onReset?: (ctx: ResetContext) => unknown;
-// }
 
 export type FiltersRules<TRule extends FilterRuleBase = FilterRuleBase> =
   ReadonlyArray<TRule>;

@@ -1,6 +1,6 @@
-import { Header } from "./header";
+import { RzHeader } from "./rz-header";
 
-export function Layout({
+export function RzLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export function Layout({
             [&:has([data-segment=intellect])_#header]:bg-intellect 
             [&:has([data-segment=balance])_#header]:bg-balance"
     >
-      <Header />
+      <RzHeader />
       {children}
     </div>
   );
