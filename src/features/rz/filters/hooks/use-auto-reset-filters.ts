@@ -1,9 +1,5 @@
 import { useEffect, useRef } from "react";
-import type {
-  FiltersRules,
-  FilterRuleKey,
-  VisibilityParams,
-} from "../types";
+import type { FiltersRules, FilterRuleKey, VisibilityParams } from "../types";
 import { isRuleVisible } from "../helpers/is-rule-visible";
 
 type Setter = (...args: any[]) => any;
@@ -34,4 +30,3 @@ export function useAutoResetFilters(
     }
   }, [rules, params, setters]);
 }
-
