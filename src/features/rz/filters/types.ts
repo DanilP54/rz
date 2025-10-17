@@ -38,6 +38,14 @@ export type FiltersSchema = {
   [S in NavSegments]: SegmentSchema<S>;
 };
 
+type Sam<V> = {
+  [S in SearchParamsKeys]?: V
+}
+
+export type TestSchemaTest<S extends NavSegments, Value> = {
+  [C in SegmentCategory<S>]: Sam<Value>
+}
+
 export type TestSchema<S extends NavSegments, Value> = {
   [C in SegmentCategory<S>]: Value
 }

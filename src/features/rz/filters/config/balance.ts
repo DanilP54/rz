@@ -2,17 +2,36 @@ import { NAV_SEGMENTS } from "@/shared/model/routes";
 
 import type {
   FilterOptionsByParams,
+  FilterRuleKey,
   FiltersRules,
   SegmentSchema,
   TestSchema,
+  TestSchemaTest,
 } from "../types";
-import { TOPIC_PARAMS, VIEW_PARAMS } from "../model/search-params";
+import {
+  AllParams,
+  SearchParams,
+  TOPIC_PARAMS,
+  VIEW_PARAMS,
+} from "../model/search-params";
 
-const VISIBLE_RULES: TestSchema<typeof NAV_SEGMENTS.BALANCE, FiltersRules> = {
-  music: [{ key: "topic" }, { key: "view", dependsOn: ["topic"]}],
-  movies: [{ key: "topic" }, { key: "view", dependsOn: ["topic"] }],
-  books: [{ key: "view" }],
-  art: [{ key: "view" }],
+export interface FilterRuleBaseS {
+  readonly dependsOn?: ReadonlyArray<FilterRuleKey>;
+  exclude?: ReadonlyArray<AllParams>;
+}
+
+const VISIBLE_RULES: TestSchemaTest<
+  typeof NAV_SEGMENTS.BALANCE,
+  FilterRuleBaseS
+> = {
+  music: { view: { dependsOn: ["topic"], exclude: ["doc"] } },
+  movies: { view: { dependsOn: ["topic"] } },
+  books: { view: { dependsOn: ["topic"] } },
+  art: { view: { dependsOn: ["topic"] } },
+  // music: [{ key: "topic" }, { key: "view", dependsOn: ["topic"]}],
+  // movies: [{ key: "topic" }, { key: "view", dependsOn: ["topic"] }],
+  // books: [{ key: "view" }],
+  // art: [{ key: "view" }],
 };
 
 const OPTIONS: TestSchema<typeof NAV_SEGMENTS.BALANCE, FilterOptionsByParams> =
