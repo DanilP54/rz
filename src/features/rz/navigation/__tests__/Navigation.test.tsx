@@ -58,9 +58,9 @@ describe("Navigation Component", () => {
     storageAdapter().clear();
   });
 
-  afterAll(() => {
-    vi.restoreAllMocks();
-  });
+  // afterAll(() => {
+  //   vi.restoreAllMocks();
+  // });
 
   describe("Disclosure Panel Behavior", () => {
     let disclosurePanel: DisclosureNavPanelTestObject;
@@ -73,10 +73,14 @@ describe("Navigation Component", () => {
 
     it("should expand on the first trigger click and collapse on the second", async () => {
       await disclosurePanel.clickTrigger(event.click);
-      expect(disclosurePanel.isExpanded()).toBe(true);
+      await waitFor(() => {
+        expect(disclosurePanel.isExpanded()).toBe(true);
+      });
 
       await disclosurePanel.clickTrigger(event.click);
-      expect(disclosurePanel.isCollapsed()).toBe(true);
+      await waitFor(() => {
+        expect(disclosurePanel.isCollapsed()).toBe(true);
+      });
     });
 
     it("should collapse the expanded panel when clicking outside", async () => {
@@ -224,10 +228,12 @@ describe("Navigation Component", () => {
 
       // 2. Открываем другую панель (instincts)
       await disclosurePanel.clickTrigger(event.click);
-      expect(
-        disclosurePanel.isExpanded(),
-        "Disclosure panel should be expanded initially"
-      ).toBe(true);
+      await waitFor(() => {
+        expect(
+          disclosurePanel.isExpanded(),
+          "Disclosure panel should be expanded initially"
+        ).toBe(true);
+      });
 
       // 3. Кликаем на ссылку в "selected" панели (intellect)
       await selectedPanel.selectCategory("books", event.click);
@@ -235,10 +241,12 @@ describe("Navigation Component", () => {
       rerender(<Navigation isMobileDevice />);
 
       // 4. Проверяем, что другая панель (instincts) закрылась
-      expect(
-        disclosurePanel.isCollapsed(),
-        "Disclosure panel should collapse after navigation"
-      ).toBe(true);
+      await waitFor(() => {
+        expect(
+          disclosurePanel.isCollapsed(),
+          "Disclosure panel should collapse after navigation"
+        ).toBe(true);
+      });
     });
   });
 });
