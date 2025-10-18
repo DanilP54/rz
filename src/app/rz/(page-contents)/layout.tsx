@@ -1,7 +1,6 @@
 import { Navigation } from "@/features/rz/navigation";
 import { RzHeader } from "@/features/rz/rz-header";
 import React from "react";
-import { TransitionProvider } from "./TransitionProvider";
 
 export default async function Layout({
   children,
@@ -20,7 +19,7 @@ export default async function Layout({
     >
       <RzHeader />
       <Navigation isMobileDevice={true} />
-      <TransitionProvider>{children}</TransitionProvider>
+     {children}
     </div>
   );
 }

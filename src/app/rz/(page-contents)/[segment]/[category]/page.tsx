@@ -6,33 +6,27 @@ import { ContentCardList } from "./Content";
 import { client } from "@/shared/api/client";
 import { PageProps } from "@/app/rz/types";
 import { getFilters } from "@/features/rz/filters/config/config";
+import { TransitionProvider } from "../../TransitionProvider";
 
-async function getContent<T>(
+async function getContentPromise<T>(
   segment: NavSegments,
   category: SegmentCategory<NavSegments>,
-  searchParams: T
+  searchParams?: T
 ) {
-  // return client.GET('/content/{category}', {
-  //   params: {
-  //     path: { category },
-  //     query: { ...searchParams, segment }
-  //   }
-  // })
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(1);
-    }, 2000);
-  });
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  return client.GET('/content/{category}', {
+    params: { path: { category } }
+  }).then(res => res.data || []);
 }
+
 
 export default async function Page(props: PageProps) {
   
   const { segment, category } = await props.params;
   const searchParams = await loadSearchParams(props.searchParams);
-
-  const contentListPromise = getContent(segment, category, { ...searchParams });
-
+  
+  const resPromise = getContentPromise(segment, category);
   const { rules, options } = getFilters(segment, category);
 
   return (
@@ -41,16 +35,18 @@ export default async function Page(props: PageProps) {
       data-segment={segment}
       data-hassegment={String(Boolean(segment))}
     >
-      <FiltersBar
-        rules={rules}
-        options={options}
-        segment={segment}
-        category={category}
-        isMobileDevice={false}
-      />
-      <Suspense fallback={<Fallback />}>
-        <ContentCardList promise={contentListPromise} />
-      </Suspense>
+      <TransitionProvider>
+        <FiltersBar
+          rules={rules}
+          options={options}
+          segment={segment}
+          category={category}
+          isMobileDevice={false}
+        />
+        <Suspense fallback={<Fallback />}>
+          <ContentCardList promise={resPromise} />
+        </Suspense>
+    </TransitionProvider>
     </div>
   );
 }

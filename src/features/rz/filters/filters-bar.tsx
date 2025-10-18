@@ -11,7 +11,7 @@ import { useViewParams } from "./hooks/use-view-params";
 import { useVisibleRules } from "./hooks/use-visible-rules";
 import { useAutoResetFilters } from "./hooks/use-auto-reset-filters";
 import { FilterOptionsByParams, FiltersRules } from "./types";
-import { useTransitAction } from "@/shared/hooks/use-transition-provider";
+import { useTransitAction } from "@/app/rz/(page-contents)/TransitionProvider";
 
 interface IFiltersBar {
   segment: NavSegments;
