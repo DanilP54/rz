@@ -6,7 +6,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactStrictMode: false,
+  experimental: {
+    optimizePackageImports: ["@chakra-ui/react"],
+  },
+  reactStrictMode: true,
 };
 
 module.exports = withBundleAnalyzer(nextConfig)

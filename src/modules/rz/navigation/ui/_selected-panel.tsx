@@ -1,0 +1,67 @@
+import { getColorOfSegment } from "@/common/lib/segment-bg-colors";
+import Link from "next/link";
+import { For } from "@/common/For";
+
+import { NavLink, Panel } from "../types";
+import { sortWithActiveItem } from "../lib/_sort-active-item";
+
+interface ISelectedPanel {
+  panel: Panel;
+  isSelected?: boolean;
+  isMobileDevice: boolean;
+  currentPath: string;
+}
+
+export function SelectedPanel({
+  panel,
+  isSelected,
+  isMobileDevice = true,
+  currentPath,
+}: ISelectedPanel) {
+  const { segmentName, links } = panel;
+  const backgroundColor = getColorOfSegment(segmentName);
+
+  const sortedLinks = sortWithActiveItem<NavLink>({
+    items: links,
+    isActive: (link) => link.href === currentPath,
+    move: {
+      when: isMobileDevice,
+      then: "start",
+      else: "keep",
+    },
+  });
+
+  return (
+    <div
+      data-testid={`slc-panel-${segmentName}`}
+      data-selected={isSelected ? "true" : undefined}
+      className="group relative h-[40px]"
+    >
+      <ul
+        className={`${backgroundColor} flex items-center justify-between gap-1 text-white font-bold w-full h-full`}
+      >
+        <For each={links}>
+          {(link) => {
+            const isActive = currentPath.includes(link.href);
+            const ariaCurrentAttribute = isActive ? "page" : undefined;
+            return (
+              <li
+                key={link.href}
+                className="w-full h-full flex items-center justify-center *:data-[active=true]:text-[20px] *:text-[9px]"
+              >
+                <Link
+                  aria-current={ariaCurrentAttribute}
+                  data-active={isActive}
+                  href={link.href}
+                  className="data-[active=true]:text-black data-[active=true]:pb-[4px]"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          }}
+        </For>
+      </ul>
+    </div>
+  );
+}
