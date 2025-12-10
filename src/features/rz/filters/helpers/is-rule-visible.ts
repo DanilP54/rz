@@ -9,3 +9,12 @@ export const isRuleVisible = (
     return rule.dependsOn.every((dep) => params[dep] !== null);
   return true;
 };
+
+
+
+export const isRuleVisiblee = (
+  rule: FilterRuleBase,
+  params: VisibilityParams
+): boolean => {
+  
+};

@@ -1,13 +1,13 @@
 import { For } from "@/shared/For";
 import { NavSegments } from "@/shared/model/routes";
-import { useState, useRef, useEffect, RefObject } from "react";
+import { useRef, RefObject } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { DisclosurePanel } from "./_disclosure-panel";
 import { sortWithActiveItem } from "../lib/_sort-active-item";
-import { toastHintManager } from "../lib/_toast-hint-manager";
-import { useHintsStorage } from "../lib/_use-hints-storage";
 import { NavigationConfig } from "../types";
 import { SelectedPanel } from "./_selected-panel";
+import { useNavigationHints } from "../hooks/use-navigation-hints";
+import { useDisclosurePanel } from "../hooks/use-disclosure-panel";
 
 interface IPanels {
   config: NavigationConfig;
@@ -20,15 +20,47 @@ export function Panels(props: IPanels) {
   const { config, currentPathname, selectedRouteSegment, isMobileDevice } =
     props;
 
-  const [expandedDiscPanel, setExpandedDiscPanel] =
-    useState<NavSegments | null>(null);
-  const storage = useHintsStorage();
-  const toast = toastHintManager();
   const navElementRef = useRef<HTMLDivElement | null>(null);
 
   const segments = Object.keys(config.panels) as NavSegments[];
+  const sortedSegments = useSortedSegments(segments, selectedRouteSegment, isMobileDevice);
 
-  const sortedSegments = sortWithActiveItem<NavSegments>({
+  useNavigationHints(config, selectedRouteSegment);
+
+  const { expandedDiscPanel, onToggleDiscPanel } = useDisclosurePanel(currentPathname);
+
+  useOnClickOutside(navElementRef as RefObject<HTMLDivElement>, () =>
+    onToggleDiscPanel(null)
+  );
+
+  return (
+    <nav ref={navElementRef} id="nav-root">
+      <ul id="nav-list" data-testid="nav-list" className="flex flex-col">
+        <For each={sortedSegments}>
+          {(segment) => (
+            <NavigationPanelItem
+              key={segment}
+              segment={segment}
+              panel={config.panels[segment]}
+              isSelected={selectedRouteSegment === segment}
+              isExpanded={expandedDiscPanel === segment}
+              isMobileDevice={isMobileDevice}
+              currentPath={currentPathname}
+              onToggle={() => onToggleDiscPanel(segment)}
+            />
+          )}
+        </For>
+      </ul>
+    </nav>
+  );
+}
+
+function useSortedSegments(
+  segments: NavSegments[],
+  selectedRouteSegment: Nullable<NavSegments>,
+  isMobileDevice: boolean
+) {
+  return sortWithActiveItem<NavSegments>({
     items: segments,
     isActive: (segment) => segment === selectedRouteSegment,
     move: {
@@ -37,58 +69,43 @@ export function Panels(props: IPanels) {
       else: "end",
     },
   });
+}
 
-  useEffect(() => {
-    // отвечает за отображение навигационных подсказок для панелей
-    if (!selectedRouteSegment || storage.isSeen(selectedRouteSegment)) return;
-    const { hintText } = config.panels[selectedRouteSegment];
-    const id = toast.show(hintText);
-    storage.save(selectedRouteSegment);
+interface NavigationPanelItemProps {
+  segment: NavSegments;
+  panel: NavigationConfig['panels'][NavSegments];
+  isSelected: boolean;
+  isExpanded: boolean;
+  isMobileDevice: boolean;
+  currentPath: string;
+  onToggle: () => void;
+}
 
-    return () => {
-      if (id) toast.hide(id);
-    };
-  }, [selectedRouteSegment]);
-
-  useEffect(() => setExpandedDiscPanel(null), [currentPathname]);
-
-  const onToggleDiscPanel = (segment: NavSegments) => {
-    setExpandedDiscPanel((prev) => (prev === segment ? null : segment));
-  };
-
-  useOnClickOutside(navElementRef as RefObject<HTMLDivElement>, () =>
-    setExpandedDiscPanel(null)
-  );
-
+function NavigationPanelItem({
+  segment,
+  panel,
+  isSelected,
+  isExpanded,
+  isMobileDevice,
+  currentPath,
+  onToggle,
+}: NavigationPanelItemProps) {
   return (
-    <nav ref={navElementRef} id="nav-root">
-      <ul id="nav-list" data-testid="nav-list" className="flex flex-col">
-        <For each={sortedSegments}>
-          {(segment) => {
-            const panel = config.panels[segment];
-            const isSelected = selectedRouteSegment === segment;
-            const isExpanded = expandedDiscPanel === segment;
-            return (
-              <li id="nav-panel" data-segment={segment} key={segment}>
-                {isSelected ? (
-                  <SelectedPanel
-                    isMobileDevice={isMobileDevice}
-                    isSelected={isSelected}
-                    currentPath={currentPathname}
-                    panel={panel}
-                  />
-                ) : (
-                  <DisclosurePanel
-                    panel={panel}
-                    isExpanded={isExpanded}
-                    onToggle={() => onToggleDiscPanel(segment)}
-                  />
-                )}
-              </li>
-            );
-          }}
-        </For>
-      </ul>
-    </nav>
+    <li id="nav-panel" data-segment={segment}>
+      {isSelected ? (
+        <SelectedPanel
+          isMobileDevice={isMobileDevice}
+          isSelected={isSelected}
+          currentPath={currentPath}
+          panel={panel}
+        />
+      ) : (
+        <DisclosurePanel
+          panel={panel}
+          isExpanded={isExpanded}
+          onToggle={onToggle}
+        />
+      )}
+    </li>
   );
 }
