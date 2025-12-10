@@ -1,6 +1,7 @@
-import { AppLogoTheme } from "@/shared/AppLogo";
-import { ROUTES } from "@/shared/model/routes";
-import ThemeToggle from "@/shared/ThemeToggle";
+import { AppLogoTheme } from "@/common/AppLogo";
+import { ROUTES } from "@/common/model/routes";
+import ThemeToggle from "@/common/ThemeToggle";
+// import { Button } from "@adobe/react-spectrum";
 import Link from "next/link";
 
 export default function Home() {

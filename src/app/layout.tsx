@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AppProviders } from "./app-providers";
+import { Theme, ThemePanel } from "@radix-ui/themes";
+
+
+
 
 const Arial = localFont({
   src: [
@@ -37,7 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${Arial.className} antialiased`}>
-        <AppProviders>{children}</AppProviders>
+        <Theme>
+            <AppProviders>
+              {children}
+            </AppProviders>
+          <ThemePanel />
+        </Theme>
       </body>
     </html>
   );
