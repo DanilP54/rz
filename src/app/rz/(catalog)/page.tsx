@@ -1,5 +1,1 @@
-export default async function Page() {
-    return (
-        <div>rz page</div>
-    )
-}
+export { PageAnnouncements as default } from "@/modules/rz";

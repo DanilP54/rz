@@ -1,0 +1,1 @@
+export type { GetMovieByIdPathParams, GetMovieById200, GetMovieById404, GetMovieByIdQueryResponse, GetMovieByIdQuery } from "./GetMovieById.ts";

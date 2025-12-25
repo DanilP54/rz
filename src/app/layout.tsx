@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AppProviders } from "./app-providers";
-import { Theme, ThemePanel } from "@radix-ui/themes";
-
 
 
 
@@ -41,12 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${Arial.className} antialiased`}>
-        <Theme>
-            <AppProviders>
-              {children}
-            </AppProviders>
-          <ThemePanel />
-        </Theme>
+          <AppProviders>
+            {children}
+          </AppProviders>
       </body>
     </html>
   );

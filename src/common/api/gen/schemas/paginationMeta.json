@@ -1,0 +1,1 @@
+{"type":"object","additionalProperties":false,"required":["currentPage","perPage","hasNextPage","hasPrevPage","total","totalPages"],"properties":{"currentPage":{"type":"integer"},"perPage":{"type":"integer"},"hasNextPage":{"type":"boolean"},"hasPrevPage":{"type":"boolean"},"total":{"type":"integer"},"totalPages":{"type":"integer"}},"x-readme-ref-name":"PaginationMeta"}

@@ -5,11 +5,15 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    optimizePackageImports: ["@chakra-ui/react"],
+  reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
+      }
+    ]
   },
-  reactStrictMode: true,
 };
 
-module.exports = withBundleAnalyzer(nextConfig)
+module.exports = withBundleAnalyzer(nextConfig);
