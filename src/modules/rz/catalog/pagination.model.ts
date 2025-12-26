@@ -2,11 +2,9 @@ import {
   action,
   atom,
   computed,
-  effect,
   isInit,
   withAsyncData,
   withComputed,
-  withInit,
   wrap,
 } from "@reatom/core";
 import { getCatalog } from "./api/api.catalog";
@@ -20,78 +18,58 @@ export const initializeCatalog = (data: CatalogResponse) => {
   serverCatalogData = data;
 };
 
-export const currentPage = atom(1, "pageAtom").extend(
+export const page = atom(1).extend(
   withComputed((state) => {
     catalogFilters();
     return isInit() ? state : 1;
-  }),
-  (target) => ({
-    next: () => target.set(target() + 1) 
   })
 );
 
-export const catalog = atom<CatalogItem[]>([]).extend((target) => {
-  const fetchList = computed(async () => {
-    const page = currentPage();
-    const filters = catalogFilters();
-    const segment = segmentAtom();
-    const category = categoryAtom();
+const hasMore = atom(true);
 
-    if (!category) return;
+const next = () => page.set(page() + 1);
 
-    const response = await wrap(
-      getCatalog(category, {
-        segment,
-        page,
-        limit: 30,
-        ...filters,
-      })
-    );
+const isRefetchingFilters = computed(() => {
+  return !fetchCatalog.ready() && list.length === 1;
+});
 
-    if (page === 1) {
-      target.set(response.items);
-    } else {
-      target.set([...target(), ...response.items]);
-    }
+const isFetchingNextPage = computed(() => {
+  return !fetchCatalog.ready() && page() > 1;
+});
 
-    return response.items;
-  }).extend(
-    withAsyncData({ status: true }),
-    withInit(async () => {
-      return serverCatalogData?.items;
+const list = atom<CatalogItem[]>([]);
+
+const fetchCatalog = action(async () => {
+  const currentPage = page();
+  const filters = catalogFilters();
+  const segment = segmentAtom();
+  const category = categoryAtom();
+
+  if (!category) return;
+
+  const response = await wrap(
+    getCatalog(category, {
+      segment,
+      page: currentPage,
+      limit: 30,
+      ...filters,
     })
   );
 
-  const isRefetching = computed(() => {
-    return fetchList.pending() && currentPage() === 1 && target.length > 0;
-  });
+  if (currentPage === 1) {
+    list.set(response.items);
+  } else {
+    list.set([...list(), ...response.items]);
+  }
 
-  const isNextPageLoading = computed(() => {
-    return fetchList.pending() && currentPage() > 1;
-  });
+  hasMore.set(response.meta.hasNextPage);
+}).extend(withAsyncData({ status: true }));
 
-  const hasMore = atom(true, "hasMore").extend(
-    withInit(() => serverCatalogData?.meta.hasNextPage ?? true)
-  );
-
-  return { fetchList, isRefetching, isNextPageLoading, hasMore };
-});
-
-
-effect(() => {
-  currentPage()
-  console.log('EFFECT')
-})
-// export const isSkeletonLoading = computed(() => {
-//   return fetchCatalog.pending() && catalogList().length === 0;
-// }, "isSkeletonLoading");
-
-// export const isFilterRefreshing = computed(() => {
-//   return (
-//     fetchCatalog.pending() && currentPage() === 1 && catalogList().length > 0
-//   );
-// }, "isFilterRefreshing");
-
-// export const isNextPageLoading = computed(() => {
-//   return fetchCatalog.pending() && currentPage() > 1;
-// }, "isNextPageLoading");
+export {
+  list,
+  fetchCatalog,
+  hasMore,
+  isFetchingNextPage,
+  isRefetchingFilters,
+  next,
+};

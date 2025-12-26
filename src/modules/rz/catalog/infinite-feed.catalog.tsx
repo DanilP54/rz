@@ -8,16 +8,7 @@ import { PersonCard } from "./ui/cards/person-card.catalog";
 import { DEFAULT_LIMIT } from "./query/query.options";
 import { type BaseCardItemProps } from "./ui/cards/base-card.catalog";
 import { CatalogGrid } from "./ui/grid.catalog";
-import {
-  catalog,
-  catalogList,
-  currentPage,
-  fetchCatalog,
-  hasMore,
-  isFilterRefreshing,
-  isNextPageLoading,
-  isSkeletonLoading,
-} from "./pagination.model";
+
 import { categoryAtom } from "./path-params";
 import { reatomComponent } from "@reatom/react";
 import { wrap } from "@reatom/core";
@@ -38,20 +29,11 @@ const MEDIA_CARDS: Record<Category, React.ComponentType<BaseCardItemProps>> = {
 export const InfiniteFeedCatalog = reatomComponent(() => {
   
   const category = categoryAtom();
-  const list = catalog();
-
-  const canLoadMore = catalog.hasMore();
-
-  const isFirstPending = catalog.fetchList.status().isFirstPending;
-  const isPending = catalog.fetchList.status().isPending;
-  const isRefetching = catalog.isRefetching();
-  const isNextPageLoading = catalog.isNextPageLoading();
-  const isFetching = catalog.fetchList.pending();
 
   const interRef = useIntersection(
     wrap(() => {
       if (canLoadMore && !isPending) {
-        currentPage.next();
+        //
       }
     }),
     [canLoadMore, isPending]

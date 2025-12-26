@@ -6,7 +6,6 @@ export function useIntersection(onIntersetor: () => void, deps: React.Dependency
     return React.useCallback(
       (el: HTMLDivElement | null) => {
         if (observerRef.current) observerRef.current.disconnect();
-  
         observerRef.current = new IntersectionObserver(
           (entries) => {
             const isIntersecting = entries[0]?.isIntersecting;
@@ -14,7 +13,7 @@ export function useIntersection(onIntersetor: () => void, deps: React.Dependency
               onIntersetor();
             }
           },
-          { threshold: 0, rootMargin: "0px 0px 6000px 0px" }
+          { threshold: 0, rootMargin: "0px 0px 5000px 0px" }
         );
   
         if (el) observerRef.current.observe(el);
