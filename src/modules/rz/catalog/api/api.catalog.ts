@@ -9,8 +9,10 @@ export async function getCatalog(
 ) {
   try {
     const api = catalogClient();
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return await api.getCatalog(category, query, config);
+
+    const response = await api.getCatalog(category, query, config);
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    return response
   } catch (error) {
     throw new Error("error fetch");
   }

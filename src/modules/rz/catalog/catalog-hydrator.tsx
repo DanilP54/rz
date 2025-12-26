@@ -1,35 +1,29 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  CatalogSearchParams,
-  initializeCatalogState,
-} from "./filters/model/search-params.model";
-import { initializeParamsState } from "./path-params";
-import { CatalogResponse, Category, Segment } from "@/common/api/gen";
-import { initializeCatalog } from "./pagination.model";
+import { initializePageSearchParams } from "./filters";
+import { initializePageParams } from "./page-params.store";
+import { CatalogPageProps } from "./type";
 
-export function CatalogHydrator({
-  searchParams,
-  params,
+type CatalogPageHydratorProps = {
+  [K in keyof CatalogPageProps]: Awaited<CatalogPageProps[K]>;
+};
+
+export function CatalogPageHydrator({
   children,
-  data,
+  ...props
 }: {
-  searchParams: CatalogSearchParams;
-  params: { category: Category; segment: Segment };
-  data: CatalogResponse;
   children: React.ReactNode;
-}) {
+} & CatalogPageHydratorProps) {
+  const { params, searchParams } = props;
+
   useMemo(() => {
-    initializeCatalogState(searchParams);
+    initializePageParams(params);
+  }, [params]);
+
+  useMemo(() => {
+    initializePageSearchParams(searchParams);
   }, [searchParams]);
 
-  useMemo(() => {
-    initializeParamsState(params.category, params.segment);
-  }, [params.category, params.segment]);
-
-  useMemo(() => {
-    initializeCatalog(data);
-  }, [data]);
   return <>{children}</>;
 }

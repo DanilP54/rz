@@ -2,13 +2,12 @@ import { topic, type Mode, type Topic, mode } from "@/common/api/gen";
 import { atom, action, withInit } from "@reatom/core";
 import z from "zod";
 
-let serverParams: CatalogSearchParams = {
-  topic: undefined,
-  mode: undefined
-};
+export let serverTopicSearchParam: Topic | undefined
+export let serverModeSearchParam: Mode | undefined
 
-export const initializeCatalogState = (params: CatalogSearchParams) => {
-  serverParams = params;
+export const initializePageSearchParams = (searchParams: CatalogSearchParams) => {
+  serverTopicSearchParam = searchParams.topic;
+  serverModeSearchParam = searchParams.mode
 };
 
 export const CatalogSearchParamsSchema = z.object({
@@ -23,14 +22,13 @@ const initState: CatalogSearchParams = {
   mode: undefined,
 };
 
-
 export const catalogFilters = atom<CatalogSearchParams>(
   initState,
   "catalogParams"
 ).extend(
   withInit((state) => ({
-    topic: serverParams.topic || state.topic,
-    mode: serverParams.mode || state.mode,
+    topic: serverTopicSearchParam || state.topic,
+    mode: serverModeSearchParam|| state.mode,
   })),
   (target) => ({
     update: action((patch: CatalogSearchParams) => {

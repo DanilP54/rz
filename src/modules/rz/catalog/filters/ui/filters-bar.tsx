@@ -16,6 +16,9 @@ interface FiltersBarProps {
 
 export const FiltersBar = reatomComponent(
   ({ segment, options, isMobileDevice }: FiltersBarProps) => {
+
+    const filters = catalogFilters()
+
     const topicRowChunks = createRowOptions(
       options.topic,
       isMobileDevice ? 4 : 2
@@ -33,7 +36,7 @@ export const FiltersBar = reatomComponent(
       >
         <FiltersGroupsLayout>
           <FiltersToggleGroup
-            selectedValue={catalogFilters().topic}
+            selectedValue={filters.topic}
             rowChunks={topicRowChunks}
             onSelect={wrap((value) =>
               catalogFilters.update({
@@ -41,9 +44,9 @@ export const FiltersBar = reatomComponent(
               })
             )}
           />
-          {catalogFilters().topic && (
+          {filters.topic && (
             <FiltersToggleGroup
-              selectedValue={catalogFilters().mode}
+              selectedValue={filters.mode}
               rowChunks={modeRowChunks}
               onSelect={wrap((value) =>
                 catalogFilters.update({
