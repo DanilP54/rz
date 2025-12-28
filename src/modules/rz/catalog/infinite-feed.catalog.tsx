@@ -145,20 +145,23 @@ const MEDIA_CARDS: Record<Category, React.ComponentType<BaseCardItemProps>> = {
 export const InfiniteFeedCatalog = reatomComponent(() => {
   const category = categoryPageParam();
 
-  const { data, isLoading, loadNextFn, isFirstLoading, isFetchNextPage,  hasMore } =
-    catalogInfiniteQuery();
+  const {
+    data,
+    isLoading,
+    loadNextFn,
+    isFirstLoadingAtom,
+    isFetchingNextPage,
+    hasMore,
+  } = catalogInfiniteQuery();
 
-    
   const interRef = useIntersection(
     wrap(() => {
-      if (hasMore() && !isLoading()) {
-        loadNextFn();
-      }
+      loadNextFn();
     }),
-    [hasMore(), isLoading()]
+    []
   );
 
-  if (isFirstLoading()) {
+  if (isFirstLoadingAtom()) {
     return <CatalogSkeleton itemsLength={DEFAULT_LIMIT} />;
   }
 
@@ -171,7 +174,11 @@ export const InfiniteFeedCatalog = reatomComponent(() => {
   return (
     <>
       <CatalogGrid
-      className={`${(isLoading() && !isFetchNextPage()) && "opacity-50 pointer-events-none"}`}
+        className={`${
+          isLoading() &&
+          !isFetchingNextPage() &&
+          "opacity-50 pointer-events-none"
+        }`}
       >
         {data().map((item) => (
           <React.Fragment key={item.id}>
@@ -194,7 +201,9 @@ export const InfiniteFeedCatalog = reatomComponent(() => {
           </React.Fragment>
         ))}
       </CatalogGrid>
-      {hasMore() && <InfiniteLoader ref={interRef} isFetching={isFetchNextPage()} />}
+      {hasMore() && (
+        <InfiniteLoader ref={interRef} isFetching={isFetchingNextPage()} />
+      )}
     </>
   );
 });
@@ -206,7 +215,7 @@ export function InfiniteLoader({
   return (
     <div
       {...props}
-      className="w-full col-span-full flex items-center justify-center min-h-12 border"
+      className="w-full col-span-full flex items-center justify-center min-h-12"
     >
       {isFetching && <Spinner className="size-5" />}
     </div>
