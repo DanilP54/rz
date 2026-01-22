@@ -17,7 +17,7 @@ import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { waitFor } from "@testing-library/dom";
 import { Navigation } from "../Navigation";
 import userEvent from "@testing-library/user-event";
-import { config } from "../config/_config";
+import { config } from "../config";
 import { storageAdapter } from "./storage-adapter";
 
 vi.mock("next/navigation", () => ({

@@ -8,10 +8,7 @@ import { PersonCard } from "./ui/cards/person-card.catalog";
 import { type BaseCardItemProps } from "./ui/cards/base-card.catalog";
 import { CatalogGrid } from "./ui/grid.catalog";
 import { useIntersection } from "./lib/use-intersection";
-import { reatomComponent } from "@reatom/react";
 import { categoryPageParam } from "./page-params.store";
-import { ciq } from "./model/pagination.model";
-import { wrap } from "@reatom/core";
 import { Category } from "@/client";
 
 const MovieCardItem = dynamic(() => import("./ui/cards/movie-card.catalog"), {
@@ -25,10 +22,8 @@ const MEDIA_CARDS: Record<Category, React.ComponentType<BaseCardItemProps>> = {
   art: MovieCardItem,
 };
 
-export const InfiniteFeedCatalog = reatomComponent(() => {
+export const InfiniteFeedCatalog = () => {
   const category = categoryPageParam();
-
-  const {list, hasMore, isFetching, isFetchingNextPage, isFirstFetching, loadList} = ciq();
 
   const interRef = useIntersection(wrap(() => loadList()));
  
@@ -73,13 +68,16 @@ export const InfiniteFeedCatalog = reatomComponent(() => {
         ))}
       </CatalogGrid>
       {hasMore() && (
-        <InfiniteLoader ref={interRef} isFetching={isFetchingNextPage()} />
+        <InfiniteTrigger 
+          ref={interRef} 
+          isFetching={isFetchingNextPage()} 
+        />
       )}
     </>
   );
-});
+};
 
-export function InfiniteLoader({
+export function InfiniteTrigger({
   isFetching,
   ...props
 }: { isFetching: boolean } & React.ComponentProps<"div">) {

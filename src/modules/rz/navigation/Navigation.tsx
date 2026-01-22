@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toastHintManager } from "./lib/_toast-hint-manager";
 import { useIntroHintDisplay } from "./lib/_use-intro-hint-display";
 
-import { config } from "./config/_config";
+import { config } from "./config";
 import { Panels } from "./ui/_panels";
 import { IntroHintDisplay } from "./ui/_intro-hint-display";
 

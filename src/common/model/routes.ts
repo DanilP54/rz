@@ -30,21 +30,16 @@ export const routes = {
     feed:  createSimpleRoute(PATTERNS.FEED),
     radio: createSimpleRoute(PATTERNS.RADIO),
     rz: (params?: RzParams & {isPerson?: boolean}) => {
-  
         if (!params) {
             return PATTERNS.RZ_ROOT;
         }
-
         const { slug, isPerson, category, segment } = params;
-
         if (isPerson && slug) {
             return toPerson({category, segment, slug});
         }
-
         if (slug) {
             return toDetail({category, segment, slug});
         }
-
         return toCatalog({category, segment, slug});
     }
 };

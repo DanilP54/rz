@@ -2,17 +2,17 @@ import { defineConfig } from "@hey-api/openapi-ts";
 
 export default defineConfig({
   input: "./schema.yaml",
-  output: "./src/common/generated",
+  output: "./src/common/api",
   plugins: [
     {
       name: "@hey-api/typescript", enums: true
     },
     {
       name: "@hey-api/client-next",
-      runtimeConfigPath: "../config.ts",
+      runtimeConfigPath: "./config.ts",
     },
     {
-      name: '@hey-api/sdk',
-    },
+      name: '@tanstack/react-query'
+    }
   ],
 });
