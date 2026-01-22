@@ -1,1 +1,1 @@
-export { MainRzLayout as default } from "@/modules/rz";
+export { RzLayout as default } from "@/modules/rz";

@@ -1,83 +1,97 @@
-import { atom, computed, memoKey, wrap } from "@reatom/core";
+import {
+  action,
+  atom,
+  computed,
+  memoKey,
+  sleep,
+  wrap,
+} from "@reatom/core";
 import { catalogFilters } from "../filters";
 import { categoryPageParam, segmentPageParam } from "../page-params.store";
-import { CatalogItem } from "@/common/api/gen";
-import { getCatalog } from "../api/api.catalog";
+import { getCatalog } from "@/client/sdk.gen";
 
-const catalogList = atom<CatalogItem[]>([], "catalog.data");
-const isFirstLoadingAtom = atom(true, "catalog.isFirstLoad");
+import type { CatalogItem } from "@/client";
 
-export const catalogInfiniteQuery = computed(() => {
+const list = atom<CatalogItem[]>([], "catalog.list");
+const isFirstFetching = atom(true, "catalog.isFirstLoad");
+
+export const ciq = computed(() => {
   const filters = catalogFilters();
   const segment = segmentPageParam();
   const category = categoryPageParam();
 
   const key = JSON.stringify(
     Object.entries({ category, segment, ...filters }).sort(([k1], [k2]) =>
-      k1.localeCompare(k2)
-    )
+      k1.localeCompare(k2),
+    ),
   );
 
-  const catalog = memoKey(key, () => {
-    const cached = atom<CatalogItem[]>([], "catalog.data");
-    const page = atom(1, "catalog.page");
+  const result = memoKey(key, () => {
+    const cacheData = atom<CatalogItem[]>([], "catalog.cache");
     const hasMore = atom(true, "catalog.hasMore");
-    const isLoading = atom(false, "catalog.isLoading");
     const isFetchingNextPage = atom(false, "catalog.isFetchNextPage");
+    const isFetching = atom(false, "catalog.isFetching");
+    const page = atom(1, "catalog.page");
 
-    const loadNextFn = computed(async () => {
-      if (isLoading() || !hasMore()) return;
+    const loadList = action(async () => {
+      if (!hasMore()) return;
 
-      isLoading.set(true);
+      isFetching.set(true);
 
-      if (cached().length !== 0) {
+      if (cacheData().length > 0) {
         isFetchingNextPage.set(true);
       }
 
       try {
-        const response = await wrap(
-          getCatalog(category, {
-            segment,
+        await wrap(sleep(3000));
+        const { data, error } = await wrap(getCatalog({
+          path: { category },
+          query: {
             ...filters,
+            segment,
             page: page(),
-            limit: 30,
-          })
-        );
-        cached.set((prev) => [...prev, ...response.items]);
-        page.set(page() + 1);
-        hasMore.set(response.meta.hasNextPage);
-      } catch (err) {
-        console.error("Failed to load products:", err);
-        throw err;
-      } finally {
-        isLoading.set(false);
-        if (isFetchingNextPage()) {
-          isFetchingNextPage.set(false);
+            limit: 30
+          }
+        }));
+        console.log(data, error)
+        if (error) {
+          throw new Error(error.message);
         }
-        if (isFirstLoadingAtom()) {
-          isFirstLoadingAtom.set(false);
-        }
-      }
-    }, "catalog.loadNext");
 
-    loadNextFn();
+        const { items, meta } = data;
+
+        cacheData.set([...cacheData(), ...items]);
+
+        hasMore.set(meta.hasNextPage);
+
+        if (hasMore()) {
+          page.set(page() + 1);
+        }
+      } finally {
+        isFetchingNextPage.set(false);
+        isFetching.set(false);
+        isFirstFetching.set(false);
+      }
+    });
+
+    loadList();
 
     return {
-      cached,
-      loadNextFn,
-      isLoading,
+      cacheList: cacheData,
+      isFetching,
       isFetchingNextPage,
-      hasMore: hasMore,
+      hasMore,
+      loadList,
     };
   });
 
-  if (!catalog.isLoading()) {
-    catalogList.set(catalog.cached());
+  if (!result.isFetching()) {
+    list.set(result.cacheList());
   }
 
   return {
-    ...catalog,
-    data: catalogList,
-    isFirstLoadingAtom,
+    list,
+    isFirstFetching,
+    ...result,
   };
 });

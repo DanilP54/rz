@@ -35,7 +35,7 @@ export const AppLogoLight = ({ size = 'medium', href = '/', ...props }: Props) =
             <Image
                 {...props}
                 priority={true}
-                className={cn('select-none cursor-pointer', props.className)}
+                className={cn('select-none cursor-pointer size-', props.className)}
                 width={logoSize}
                 height={logoSize}
                 src={LightLogo}

@@ -21,7 +21,6 @@ export const Navigation = ({ isMobileDevice }: { isMobileDevice: boolean }) => {
   );
   
   useEffect(() => {
-    // отвечает за отображение интро-подсказки в toast
     if (displayIntroHint.asToast) {
       toast.show(config.intro.text);
     }

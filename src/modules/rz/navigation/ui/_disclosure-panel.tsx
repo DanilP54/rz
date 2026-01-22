@@ -29,7 +29,7 @@ export function DisclosurePanel({
         aria-controls={`nav-dropdown-menu-${segment}`}
         onClick={onToggle}
         className={`w-[35px] rounded-none cursor-pointer h-[40px] px-2 ${bgColorPanel}`}
-      ></button>
+      />
       <ul
         data-testid={`disc-link-list-${segment}`}
         className={`${isVisibleClassName} ${bgColorPanel} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-3xl`}

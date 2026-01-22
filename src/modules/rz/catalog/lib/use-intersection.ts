@@ -1,6 +1,6 @@
 import React from "react";
 
-export function useIntersection(onIntersetor: () => void, deps: React.DependencyList) {
+export function useIntersection(onIntersetor: () => void) {
     const observerRef = React.useRef<IntersectionObserver | null>(null);
   
     return React.useCallback(
@@ -20,6 +20,6 @@ export function useIntersection(onIntersetor: () => void, deps: React.Dependency
   
         return () => observerRef.current?.disconnect()
       },
-      [...deps]
+      []
     );
   }

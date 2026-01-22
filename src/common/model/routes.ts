@@ -1,55 +1,50 @@
-export type NavSegments = (typeof NAV_SEGMENTS)[keyof typeof NAV_SEGMENTS];
-export type SegmentCategory<S extends NavSegments> =
-  (typeof SEGMENT_CATEGORIES)[S][number];
-export type SegmentRoutes<S extends NavSegments> = Record<
-  SegmentCategory<S>,
-  string
->;
+import type { Category, Segment } from "@/client";
+import { compile } from "path-to-regexp";
 
-export const NAV_SEGMENTS = {
-  INSTINCTS: "instincts",
-  INTELLECT: "intellect",
-  BALANCE: "balance",
-} as const;
+export type RzParams = {
+    segment: Segment;
+    category: Category;
+    slug?: string;  
+};
 
-export const SEGMENT_CATEGORIES = {
-  [NAV_SEGMENTS.INSTINCTS]: ["music", "movies", "books", "art"] as const,
-  [NAV_SEGMENTS.INTELLECT]: ["music", "movies", "books", "art"] as const,
-  [NAV_SEGMENTS.BALANCE]: ["music", "movies", "books", "art"] as const,
-} as const;
+const PATTERNS = {
+    HOME: '/',
+    FEED: '/feed',
+    RADIO: '/radio',
+    RZ_ROOT: '/rz',
+    RZ_CATALOG: '/rz/:segment/:category',
+    RZ_DETAIL:  '/rz/:segment/:category/:slug',
+    RZ_PERSON:  '/rz/:segment/:category/person/:slug',
+};
 
-export const ROUTES = {
-  feed: "/feed",
-  radio: "/radio",
-  rz: {
-    root: "/rz",
-    [NAV_SEGMENTS.INSTINCTS]: buildRZSegmentRoutes(NAV_SEGMENTS.INSTINCTS),
-    [NAV_SEGMENTS.INTELLECT]: buildRZSegmentRoutes(NAV_SEGMENTS.INTELLECT),
-    [NAV_SEGMENTS.BALANCE]: buildRZSegmentRoutes(NAV_SEGMENTS.BALANCE),
-  },
-} as const;
+const toCatalog = compile<RzParams>(PATTERNS.RZ_CATALOG);
+const toDetail  = compile<RzParams>(PATTERNS.RZ_DETAIL);
+const toPerson  = compile<RzParams>(PATTERNS.RZ_PERSON);
 
-export function getSegmentRoutePath<S extends NavSegments>(
-  segment: NavSegments,
-  category: SegmentCategory<S>
-) {
-  return ROUTES.rz[segment][category];
+function createSimpleRoute(path: string) {
+    return () => path;
 }
 
-function buildRZSegmentRoutes<S extends NavSegments>(
-  segment: S
-): SegmentRoutes<S> {
-  return Object.fromEntries(
-    SEGMENT_CATEGORIES[segment].map((category) => [
-      category,
-      `/rz/${segment}/${category}`,
-    ])
-  ) as SegmentRoutes<S>;
-}
+export const routes = {
+    home:  createSimpleRoute(PATTERNS.HOME),
+    feed:  createSimpleRoute(PATTERNS.FEED),
+    radio: createSimpleRoute(PATTERNS.RADIO),
+    rz: (params?: RzParams & {isPerson?: boolean}) => {
+  
+        if (!params) {
+            return PATTERNS.RZ_ROOT;
+        }
 
-export const getRzRoute = <S extends NavSegments>(
-  segment: S,
-  category: SegmentCategory<S>
-) => {
-  return ROUTES.rz[segment][category];
+        const { slug, isPerson, category, segment } = params;
+
+        if (isPerson && slug) {
+            return toPerson({category, segment, slug});
+        }
+
+        if (slug) {
+            return toDetail({category, segment, slug});
+        }
+
+        return toCatalog({category, segment, slug});
+    }
 };

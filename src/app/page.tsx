@@ -1,6 +1,6 @@
 import { AppLogoTheme } from "@/common/AppLogo";
-import { ROUTES } from "@/common/model/routes";
 import ThemeToggle from "@/common/ThemeToggle";
+import { routes } from "@/common/model/routes";
 import Link from "next/link";
 
 export default async function Home() {
@@ -12,9 +12,9 @@ export default async function Home() {
         <div className="flex flex-col items-center justify-center grow gap-5">
           <AppLogoTheme size="large" />
           <nav className="flex justify-center gap-5 text-md font-bold [&_a]:hover:underline">
-            <Link href={ROUTES.feed}>feed</Link>
-            <Link href={ROUTES.radio}>rz radio</Link>
-            <Link href={ROUTES.rz.root}>rz</Link>
+            <Link href={routes.feed()}>feed</Link>
+            <Link href={routes.radio()}>rz radio</Link>
+            <Link href={routes.rz()}>rz</Link>
           </nav>
         </div>
       </div>

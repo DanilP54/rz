@@ -1,5 +1,5 @@
 "use client";
-import { Segment } from "@/common/api/gen";
+
 import type { OptionsBySearchParams } from "../options/type";
 import { FiltersGroupsLayout } from "./filters-group.layout";
 import { createRowOptions } from "../lib/create-row.options";
@@ -7,6 +7,7 @@ import { FiltersToggleGroup } from "./filters-group.toggle";
 import { reatomComponent } from "@reatom/react";
 import { catalogFilters } from "../model/search-params.model";
 import { wrap } from "@reatom/core";
+import { Segment } from "@/client";
 
 interface FiltersBarProps {
   segment: Segment;

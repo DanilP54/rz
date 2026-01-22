@@ -1,10 +1,10 @@
-import { mode, type Category, type Segment, topic } from "@/common/api/gen";
+import { Category, Mode, Segment, Topic } from "@/client";
 import { OptionsByCategory, OptionsBySegment } from "./type";
 
 const getModeOptions = () => {
   return [
-    { label: "по работе", value: mode.creators },
-    { label: "по автору", value: mode.works },
+    { label: "по работе", value: Mode.CREATORS },
+    { label: "по автору", value: Mode.WORKS },
   ];
 };
 
@@ -12,16 +12,16 @@ const getInstinctsCategoryOptions = (): OptionsByCategory => {
   return {
     movies: {
       topic: [
-        { label: "эстетика", value: topic.aesthetics },
-        { label: "самовыражение", value: topic["self-expression"] },
-        { label: "концерты", value: topic.live },
+        { label: "эстетика", value: Topic.AESTHETICS },
+        { label: "самовыражение", value: Topic.SELF_EXPRESSION },
+        { label: "концерты", value: Topic.LIVE },
       ],
       mode: getModeOptions(),
     },
     music: {
       topic: [
-        { label: "эстетика", value: topic.aesthetics },
-        { label: "самовыражение", value: topic["self-expression"] },
+        { label: "эстетика", value: Topic.AESTHETICS },
+        { label: "самовыражение", value: Topic.SELF_EXPRESSION },
       ],
       mode: getModeOptions(),
     },
@@ -40,17 +40,17 @@ const getIntellectCategoryOptions = (): OptionsByCategory => {
   return {
     movies: {
       topic: [
-        { label: "эстетика", value: topic.aesthetics },
-        { label: "самовыражение", value: topic["self-expression"] },
-        { label: "концерты", value: topic.live },
-        { label: "документальные", value: topic.documentary },
+        { label: "эстетика", value: Topic.AESTHETICS  },
+        { label: "самовыражение", value: Topic.SELF_EXPRESSION },
+        { label: "концерты", value: Topic.LIVE },
+        { label: "документальные", value: Topic.DOCUMENTARY },
       ],
       mode: getModeOptions(),
     },
     music: {
       topic: [
-        { label: "эстетика", value: topic.aesthetics },
-        { label: "самовыражение", value: topic["self-expression"] },
+        { label: "эстетика", value: Topic.AESTHETICS },
+        { label: "самовыражение", value: Topic.SELF_EXPRESSION },
       ],
       mode: getModeOptions(),
     },
@@ -69,16 +69,16 @@ const getBalanceCategoryOptions = (): OptionsByCategory => {
   return {
     movies: {
       topic: [
-        { label: "эстетика", value: topic.aesthetics },
-        { label: "самовыражение", value: topic["self-expression"] },
-        { label: "сериалы", value: topic.series },
+        { label: "эстетика", value: Topic.AESTHETICS },
+        { label: "самовыражение", value: Topic.SELF_EXPRESSION },
+        { label: "сериалы", value: Topic.SERIES },
       ],
       mode: getModeOptions(),
     },
     music: {
       topic: [
-        { label: "эстетика", value: topic.aesthetics },
-        { label: "самовыражение", value: topic["self-expression"] },
+        { label: "эстетика", value: Topic.AESTHETICS },
+        { label: "самовыражение", value: Topic.SELF_EXPRESSION },
       ],
       mode: getModeOptions(),
     },

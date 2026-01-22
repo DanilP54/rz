@@ -1,1 +1,1 @@
-export { PageCatalog } from "./page.catalog";
+export { PageCatalog } from "./catalog.page";

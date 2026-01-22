@@ -1,6 +1,6 @@
 
-import type { Category, Segment } from "@/common/api/gen";
 // import type { SearchParamsCatalog } from "../model/search-params.catalog";
+import { Category, Segment } from '@/client';
 import type {CatalogSearchParams} from '../model/search-params.model';
 
 export interface FilterOption<Values = string> {

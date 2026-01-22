@@ -1,1 +1,0 @@
-{"type":"object","additionalProperties":false,"required":["metaType","id","slug"],"properties":{"id":{"type":"string","format":"uuid"},"metaType":{"type":"string","enum":["director_meta","writer_meta"],"x-readme-ref-name":"ContributorMetaType"},"slug":{"type":"string"}},"x-readme-ref-name":"CatalogContributorMeta"}

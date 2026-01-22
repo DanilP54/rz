@@ -1,1 +1,0 @@
-{"type":"string","enum":["movies","music","books","art"],"x-readme-ref-name":"Category"}

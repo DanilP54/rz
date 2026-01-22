@@ -1,5 +1,5 @@
-import { topic, type Mode, type Topic, mode } from "@/common/api/gen";
-import { atom, action, withInit } from "@reatom/core";
+import { Mode, Topic } from "@/client";
+import { action, atom, withInit } from "@reatom/core";
 import z from "zod";
 
 export let serverTopicSearchParam: Topic | undefined
@@ -11,8 +11,8 @@ export const initializePageSearchParams = (searchParams: CatalogSearchParams) =>
 };
 
 export const CatalogSearchParamsSchema = z.object({
-  topic: z.nativeEnum(topic).optional(),
-  mode: z.nativeEnum(mode).optional(),
+  topic: z.nativeEnum(Topic).optional(),
+  mode: z.nativeEnum(Mode).optional(),
 });
 
 export type CatalogSearchParams = z.infer<typeof CatalogSearchParamsSchema>;

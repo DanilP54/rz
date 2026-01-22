@@ -3,8 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AppProviders } from "./app-providers";
 
-
-
 const Arial = localFont({
   src: [
     {

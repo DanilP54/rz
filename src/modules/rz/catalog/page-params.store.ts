@@ -1,4 +1,4 @@
-import { Category, Segment } from "@/common/api/gen";
+import { Category, Segment } from "@/client";
 import { atom, withInit } from "@reatom/core";
 
 export let serverCategoryPageParam: Category;
