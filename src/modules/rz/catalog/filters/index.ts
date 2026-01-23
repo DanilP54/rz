@@ -5,4 +5,4 @@ export {
   CatalogSearchParamsSchema,
   catalogFilters,
   type CatalogSearchParams,
-} from "./model/search-params.model";
+} from "./model/model";

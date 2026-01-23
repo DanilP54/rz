@@ -1,4 +1,4 @@
-import { Category, Mode, Segment, Topic } from "@/client";
+import { Category, Mode, Segment, Topic } from "@/common/api/client";
 import { OptionsByCategory, OptionsBySegment } from "./type";
 
 const getModeOptions = () => {

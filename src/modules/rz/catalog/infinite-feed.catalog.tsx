@@ -8,8 +8,10 @@ import { PersonCard } from "./ui/cards/person-card.catalog";
 import { type BaseCardItemProps } from "./ui/cards/base-card.catalog";
 import { CatalogGrid } from "./ui/grid.catalog";
 import { useIntersection } from "./lib/use-intersection";
-import { categoryPageParam } from "./page-params.store";
-import { Category } from "@/client";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getCatalogInfiniteOptions } from "@/common/api/client/@tanstack/react-query.gen";
+import { useParams, useSearchParams } from "next/navigation";
+import { Category, Segment } from "@/common/api/client";
 
 const MovieCardItem = dynamic(() => import("./ui/cards/movie-card.catalog"), {
   loading: () => <CardItemSkeleton />,
@@ -23,23 +25,37 @@ const MEDIA_CARDS: Record<Category, React.ComponentType<BaseCardItemProps>> = {
 };
 
 export const InfiniteFeedCatalog = () => {
-  const category = categoryPageParam();
+  // const category = categoryPageParam();
 
-  const interRef = useIntersection(wrap(() => loadList()));
+  const params = useParams<{category: Category, segment: Segment}>();
+  const searchParams = useSearchParams();
+
+  // const {} = useInfiniteQuery(
+  //   getCatalogInfiniteOptions({
+  //     path: {
+  //       category: category,
+  //     },
+  //     query: {
+  //       ...Object.fromEntries(searchParams.entries()),
+  //     },
+  //   })
+  // )
+
+  const interRef = useIntersection(() => {});
  
-  if (isFirstFetching()) {
-    return <CatalogSkeleton itemsLength={30} />;
-  }
+  // if (isFirstFetching()) {
+  //   return <CatalogSkeleton itemsLength={30} />;
+  // }
 
-  if (!list() || list().length === 0) {
-    return <EmptyCatalog />;
-  }
+  // if (!list() || list().length === 0) {
+  //   return <EmptyCatalog />;
+  // }
 
-  const MediaCardComponent = MEDIA_CARDS[category];
+  // const MediaCardComponent = MEDIA_CARDS[category];
 
   return (
     <>
-      <CatalogGrid
+      {/* <CatalogGrid
         className={`${
           isFetching() &&
           !isFetchingNextPage() &&
@@ -72,7 +88,7 @@ export const InfiniteFeedCatalog = () => {
           ref={interRef} 
           isFetching={isFetchingNextPage()} 
         />
-      )}
+      )} */}
     </>
   );
 };

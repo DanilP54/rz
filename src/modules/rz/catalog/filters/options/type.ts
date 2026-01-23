@@ -1,7 +1,8 @@
 
 // import type { SearchParamsCatalog } from "../model/search-params.catalog";
-import { Category, Segment } from '@/client';
-import type {CatalogSearchParams} from '../model/search-params.model';
+import type { Category, Segment } from '@/common/api/client';
+import { CatalogFilters } from '../model/schema';
+
 
 export interface FilterOption<Values = string> {
   label: string;
@@ -9,7 +10,7 @@ export interface FilterOption<Values = string> {
 }
 
 export type OptionsBySearchParams = {
-    [K in keyof Required<CatalogSearchParams>]: FilterOption<CatalogSearchParams[K]>[]
+    [K in keyof Required<CatalogFilters>]: FilterOption<CatalogFilters[K]>[]
 };
 
 export type OptionsByCategory = Record<Category, OptionsBySearchParams>;
