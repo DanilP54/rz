@@ -1,4 +1,4 @@
-import { NavigationHintKey, STORAGE_KEY } from "../lib/_use-hints-storage";
+import { NavigationHintKey, STORAGE_KEY } from "../lib/use-hints-storage";
 
 export const getStoredHints = () =>
   JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]") as NavigationHintKey[];

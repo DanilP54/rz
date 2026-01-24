@@ -14,9 +14,8 @@ export const $catalogFilters = qsUtils.createSearchParamsStore((def) => ({
     }),
 }));
 
-
 effect($catalogFilters.$values, (value) => {
-    if(value.topic === undefined) {
+    if(value.topic == null) {
         $catalogFilters.update('mode', undefined);
     }
 })

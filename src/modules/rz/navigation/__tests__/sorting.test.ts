@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sortWithActiveItem } from '../lib/_sort-active-item'
+import { sortWithActiveItem } from '../lib/sort-active-item'
 
 interface Link {
   href: string
