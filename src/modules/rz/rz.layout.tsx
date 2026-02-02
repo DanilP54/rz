@@ -11,9 +11,9 @@ export async function RzLayout({
   return (
     <>
       <RzHeader />
-      <InitPageParams>
-        <Navigation isMobileDevice={true} />
-      </InitPageParams>
+      <InitPageParams />
+      <Navigation  />
+      {/* </InitPageParams> */}
       {children}
     </>
   );

@@ -4,26 +4,29 @@ import { For } from "@/common/For";
 
 import { NavLink, Panel } from "../types";
 import { sortWithActiveItem } from "../lib/sort-active-item";
+import { Segment } from "@/common/api/client";
+import { usePathname } from "next/navigation";
 
 interface ISelectedPanel {
-  panel: Panel;
+  segmentName: Segment;
   isSelected?: boolean;
   isMobileDevice: boolean;
-  currentPath: string;
+  links: NavLink[];
 }
 
 export function SelectedPanel({
-  panel,
+  segmentName,
   isSelected,
   isMobileDevice = true,
-  currentPath,
+  links,
 }: ISelectedPanel) {
-  const { segmentName, links } = panel;
+
   const backgroundColor = getColorOfSegment(segmentName);
+  const pathname = usePathname()
 
   const sortedLinks = sortWithActiveItem<NavLink>({
-    items: links,
-    isActive: (link) => link.href === currentPath,
+    items: [],
+    isActive: (link) => link.href === pathname,
     move: {
       when: isMobileDevice,
       then: "start",
@@ -42,7 +45,7 @@ export function SelectedPanel({
       >
         <For each={links}>
           {(link) => {
-            const isActive = currentPath.includes(link.href);
+            const isActive = pathname.includes(link.href);
             const ariaCurrentAttribute = isActive ? "page" : undefined;
             return (
               <li

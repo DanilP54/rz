@@ -8,6 +8,7 @@
   import { validateSearchParams } from "./filters/model/validator";
 import { notFound } from "next/navigation";
 
+
   export async function PageCatalog(props: CatalogPageProps) {
     const params = await props.params;
     const searchParams = await props.searchParams;

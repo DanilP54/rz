@@ -1,9 +1,10 @@
+import type { Segment } from "@/common/api/client";
 import { useLocalStorage } from "usehooks-ts";
-import {NavSegments} from "@/common/model/routes";
+
 
 
 export type NavigationHintIntroKey = "intro";
-export type NavigationHintSegmentKey = NavSegments;
+export type NavigationHintSegmentKey = Segment;
 export type NavigationHintKey = NavigationHintSegmentKey | NavigationHintIntroKey;
 
 export const STORAGE_KEY = 'seenHint'

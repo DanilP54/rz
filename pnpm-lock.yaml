@@ -74,6 +74,12 @@ dependencies:
   '@radix-ui/themes':
     specifier: ^3.2.1
     version: 3.2.1(@types/react-dom@19.2.3)(@types/react@19.2.9)(react-dom@19.2.3)(react@19.2.3)
+  '@reatom/core':
+    specifier: ^1000.10.0
+    version: 1000.10.0
+  '@reatom/react':
+    specifier: ^1000.2.1
+    version: 1000.2.1(@reatom/core@1000.10.0)(react-dom@19.2.3)(react@19.2.3)
   '@tanstack/react-query':
     specifier: ^5.90.19
     version: 5.90.20(react@19.2.3)
@@ -2825,6 +2831,26 @@ packages:
       react-remove-scroll-bar: 2.3.8(@types/react@19.2.9)(react@19.2.3)
     dev: false
 
+  /@reatom/core@1000.10.0:
+    resolution: {integrity: sha512-q3j7k3OnqHkQYsTcLPJ0Ars7qiahXsl3gsHV15a92nhhlFwjVNMvr1gZXO1rjm9HXHgAgog6tuxSGQcSPHD6bw==}
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+    optionalDependencies:
+      idb-keyval: 6.2.2
+    dev: false
+
+  /@reatom/react@1000.2.1(@reatom/core@1000.10.0)(react-dom@19.2.3)(react@19.2.3):
+    resolution: {integrity: sha512-lcWluPE/2wEJXHNm4/AC66B0HLqXwfkVLkB/MTG09OUQJiMzoGwLezxeQDugeJDG5n4kceX30siV0DSP5Lmf0g==}
+    peerDependencies:
+      '@reatom/core': ^1000.10.0
+      react: '>=18.2.0'
+      react-dom: '>=18.2.0'
+    dependencies:
+      '@reatom/core': 1000.10.0
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+    dev: false
+
   /@rolldown/pluginutils@1.0.0-beta.27:
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
     dev: true
@@ -3036,6 +3062,10 @@ packages:
   /@rushstack/eslint-patch@1.15.0:
     resolution: {integrity: sha512-ojSshQPKwVvSMR8yT2L/QtUkV5SXi/IfDiJ4/8d6UbTPjiHVmxZzUAzGD8Tzks1b9+qQkZa0isUOvYObedITaw==}
     dev: true
+
+  /@standard-schema/spec@1.1.0:
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+    dev: false
 
   /@standard-schema/utils@0.3.0:
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
@@ -5229,6 +5259,12 @@ packages:
     dependencies:
       safer-buffer: 2.1.2
     dev: true
+
+  /idb-keyval@6.2.2:
+    resolution: {integrity: sha512-yjD9nARJ/jb1g+CvD0tlhUHOrJ9Sy0P8T9MF3YaLlHnSRpwPfpTX0XIvpmw3gAJUmEu3FiICLBDPXVwyEvrleg==}
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}

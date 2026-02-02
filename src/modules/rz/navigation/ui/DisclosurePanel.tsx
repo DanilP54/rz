@@ -1,19 +1,21 @@
 import { For } from "@/common/For";
 import { getColorOfSegment } from "@/common/lib/segment-bg-colors";
 import Link from "next/link";
-import { Panel } from "../types";
+import { NavLink, Panel } from "../types";
+import { Segment } from "@/common/api/client";
 
 export function DisclosurePanel({
-  panel,
+  segmentName,
   isExpanded,
   onToggle,
+  links,
 }: {
   isExpanded: boolean;
-  panel: Panel;
+  segmentName: Segment;
   onToggle: () => void;
+  links: NavLink[];
 }) {
-  const segment = panel.segmentName;
-  const linksList = panel.links;
+  const segment = segmentName;
   const bgColorPanel = getColorOfSegment(segment);
   const isVisibleClassName = isExpanded ? "flex" : "hidden";
 
@@ -34,7 +36,7 @@ export function DisclosurePanel({
         data-testid={`disc-link-list-${segment}`}
         className={`${isVisibleClassName} ${bgColorPanel} flex-col justify-center gap-3 absolute top-0 left-[40px] right-2 z-50 shadow-lg text-white font-bold text-3xl`}
       >
-        <For each={linksList}>
+        <For each={links}>
           {({ href, label }) => (
             <li key={href}>
               <Link
