@@ -45,8 +45,8 @@ next-env.d.ts
 /.cursor
 
 # windsurf rules
-/.windsurf
-.windsurfrules
+# /.windsurf
+# .windsurfrules
 
 
 /generated/prisma

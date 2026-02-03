@@ -29,8 +29,6 @@ export const useHintsStorage = (): HintsStorage => {
   const isEmpty = () => {
     return seenHint.length === 0
   }
-
-
   return {
     isEmpty, 
     isSeen,

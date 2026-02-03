@@ -1,32 +1,27 @@
 "use client";
-import { useEffect, useMemo } from "react";
-import { useIntroHintDisplay } from "./lib/use-intro-hint-display";
-
+import { useEffect, useState } from "react";
 import { buildNavLinks, config } from "./config";
-import { Panels } from "./ui/Panels";
-import { IntroHintDisplay } from "./ui/IntroHintDisplay";
+
 // import { atom, computed, effect, onMount } from "nanostores";
 import type { Segment } from "@/common/api/client";
 import { persistentAtom } from '@nanostores/persistent'
-import { useStore } from "@nanostores/react";
+
 import { toast } from "sonner";
 import { fromMediaQuery } from '@nanostores/media-query'
-import { action, atom, computed, effect, isInit, peek, reatomBoolean, reatomMediaQuery, reset, withActions, withComputed, withConnectHook, withLocalStorage } from '@reatom/core'
-import { reatomComponent, reatomFactoryComponent } from '@reatom/react'
-import Link from "next/link";
-import { isVisible } from "@testing-library/user-event/dist/cjs/utils/index.js";
-import { sortedPanels, sortWithActiveItem } from "./lib/sorted";
+
+
+import { sortWithActiveItem } from "./lib/sorted";
 import { getPanels, Panel } from "./configuration";
 import { SelectedPanel } from "./ui/SelectedPanel";
 import { DisclosurePanel } from "./ui/DisclosurePanel";
+import { useSelectedLayoutSegment } from "next/navigation";
+
+
 
 type HintKey = Segment | 'intro'
-
 const INTRO_HINT_KEY = 'intro'
 export type NavigationHintIntroKey = typeof INTRO_HINT_KEY;
 export type NavigationHintKey = Segment | NavigationHintIntroKey;
-
-export const selectedSegmentLayout = atom<Segment | null>(null);
 
 
 type HintDisplayMode = 'overlay' | 'inline';
@@ -35,109 +30,23 @@ const getHintText = (segment: Segment | null): string => {
   return segment ? config.panels[segment].hint : config.introHint
 }
 
-
-const reatomNavigatinModel = () => {
-
-  const expanded = atom<Segment | null>(null).extend((target) => ({
-    reset: () => target.set(null),
-    toggle: (newValue: Segment | null) => {
-      if (newValue === target()) {
-        target.set(null)
-      } else {
-        target.set(newValue)
-      }
-    }
-  }))
-
-  const isMobile = reatomMediaQuery('(max-width: 600px)');
-
-  const isBeenInRootRoute = reatomBoolean(false)
-
-  const seenHintsPersist = atom<NavigationHintKey[]>([]).extend(
-    withActions((target) => ({
-      exist: (value: NavigationHintKey) => target().includes(value),
-      write: (newValue: NavigationHintKey) => target.set([...target(), newValue]),
-      isEmpty: () => target().length === 0
-    }),
-    ), withLocalStorage('seenHints'));
+export const $hint = persistentAtom<NavigationHintKey[]>('hint', [], {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+})
 
 
-  const isVisible = reatomBoolean(false)
+export const Navigation = () => {
 
-  const displayMode = computed<HintDisplayMode>(() => {
-    const isRootRouteAndMobile = isMobile() && !selectedSegmentLayout()
-    return isRootRouteAndMobile
-      ? 'inline'
-      : 'overlay'
-  }, 'hintDisplayMode')
+  const isMobile = fromMediaQuery('(max-width: 600px)')
 
-  const text = computed(() => getHintText(selectedSegmentLayout()), 'hintText')
-
-
-
-  effect(() => {
-
-    const selectedSegment = selectedSegmentLayout()
-    const isRootRoute = !selectedSegment
-    const persistKey = selectedSegment ?? INTRO_HINT_KEY
-    const isSeenHint = seenHintsPersist.exist(persistKey)
-
-    if (!isRootRoute) {
-
-      if (isSeenHint) {
-        return isVisible.setFalse()
-      }
-      seenHintsPersist.write(persistKey)
-      return isVisible.setTrue()
-
-    } else {
-
-      const isSeenAnySegment = !seenHintsPersist.isEmpty()
-
-      if (peek(isBeenInRootRoute) && isSeenAnySegment) {
-        seenHintsPersist.write(persistKey)
-      }
-
-      if (isSeenHint) {
-        return isVisible.setFalse()
-      }
-
-      isVisible.setTrue()
-
-      if (!peek(isBeenInRootRoute)) {
-        isBeenInRootRoute.setTrue()
-      }
-    }
-
-  })
-
-
-  return {
-    selectedSegmentLayout,
-    hint: { isVisible, displayMode, text },
-    expanded,
-  }
-}
-
-
-
-
-export const Navigation = reatomComponent(() => {
-
-  const { selectedSegmentLayout, hint, expanded } = useMemo(reatomNavigatinModel, []);
-
-  const selectedSegment = selectedSegmentLayout()
-
-  const inlineMode = hint.displayMode() === 'inline';
-  const overlayMode = hint.displayMode() === 'overlay';
-  const isVisible = hint.isVisible();
-  const text = hint.text();
-
-  console.log(expanded())
+  const selectedPanel = useSelectedLayoutSegment() as Segment | null
+  const disclosure = useDisclosure()
+  const hint = useNavigationHint(selectedPanel, isMobile.get())
 
   const sortedPanels = sortWithActiveItem({
     items: getPanels(),
-    isActive: (segment) => segment.name === selectedSegment,
+    isActive: (segment) => segment.name === selectedPanel,
     move: {
       when: true,
       then: "start",
@@ -145,23 +54,13 @@ export const Navigation = reatomComponent(() => {
     },
   });
 
-  useEffect(() => {
-    if (!overlayMode || !isVisible) return
-    const id = toast(text)
-  }, [
-    selectedSegment,
-    overlayMode,
-    text,
-    isVisible
-  ]);
-
   return (
     <div id="nav-wrap" className="relative">
       <nav ref={undefined} id="nav-root">
         <ul id="nav-list" data-testid="nav-list" className="flex flex-col">
           {sortedPanels.map((panel) => {
-            const isSelected = selectedSegment === panel.name
-            const isExpanded = expanded() === panel.name
+            const isSelected = selectedPanel === panel.name
+            const isExpanded = opened === panel.name
             return (
               <li key={panel.name} id="nav-panel" data-segment={panel.name}>
                 {isSelected ? (
@@ -175,7 +74,7 @@ export const Navigation = reatomComponent(() => {
                   <DisclosurePanel
                     segmentName={panel.name}
                     isExpanded={isExpanded}
-                    onToggle={() => expanded.toggle(panel.name)}
+                    onToggle={disclosure.toggle}
                     links={buildNavLinks(panel.name, panel.categories)}
                   />
                 )}
@@ -184,8 +83,130 @@ export const Navigation = reatomComponent(() => {
           })}
         </ul>
       </nav>
-      <IntroHintDisplay text={text} isShow={inlineMode && isVisible} />
+
+      {hint.mode === 'inline' && hint.isVisible && (
+        <InlineHint message={hint.message} />
+      )}
+
+      {hint.mode === 'overlay' && hint.isVisible && (
+        <ToastHint message={hint.message} onClose={hint.close} />
+      )}
+
     </div>
   );
-})
+}
+
+export const ToastHint = ({ message, onClose }: { message: string; onClose: () => void }) => {
+  useEffect(() => {
+    const id = toast(message, { onDismiss: onClose })
+    return () => {
+      toast.dismiss(id)
+    }
+  }, [message])
+
+  return null
+}
+
+export const InlineHint = ({ message }: { message: string }) => {
+  return (
+    <div className={`absolute top-0 flex h-[120px] items-center right-0 w-[calc(100%-35px)]`}>
+      <div className="flex items-center justify-center text-center px-3">
+        <span className="grow font-bold text-xs">{message}</span>
+      </div>
+    </div>
+  )
+}
+
+
+
+export const useNavigationHint = (
+  selected: Segment | null,
+  isMobile: boolean
+) => {
+  const [forcedVisible, setForcedVisible] = useState(false)
+
+  const key: HintKey = selected ?? 'intro'
+
+  const mode: HintDisplayMode =
+    !selected && isMobile ? 'inline' : 'overlay'
+
+  const message = getHintText(selected)
+
+  const seen = $hint.get()
+
+  const hasSeenThis = seen.includes(key)
+
+  const hasSeenAnySegment = seen.some(k => k !== 'intro')
+
+  const shouldAutoShow = !hasSeenThis
+
+  const isVisible = forcedVisible || shouldAutoShow
+
+  useEffect(() => {
+    // SEGMENT — сохраняем сразу
+    if (selected && !hasSeenThis) {
+      $hint.set([...$hint.get(), key])
+      return
+    }
+
+    // INTRO — сохраняем только если видели сегменты
+    if (!selected && !hasSeenThis && hasSeenAnySegment) {
+      $hint.set([...$hint.get(), 'intro'])
+    }
+
+  }, [key])
+
+  const open = () => setForcedVisible(true)
+  const close = () => setForcedVisible(false)
+  const toggle = () => setForcedVisible(v => !v)
+
+  return {
+    key,
+    mode,
+    message,
+    isVisible,
+    open,
+    close,
+    toggle,
+    hasSeen: hasSeenThis,
+    hasSeenAnySegment,
+  }
+}
+
+
+const useDisclosure = () => {
+  const [opened, setOpened] = useState<Segment | null>(null)
+
+  const toggle = (segmentName: Segment | null) => {
+    const newValue = value === opened ? null : value
+    setOpened(newValue)
+  }
+
+  const open = (segmentName: Segment | null) => {
+    setOpened(segmentName)
+  }
+
+  const close = () => {
+    setOpened(null)
+  }
+
+  return {
+    opened,
+    toggle,
+    open,
+    close
+  }
+}
+
+
+
+
+
+
+<Navigation>
+  <Navigation.Panel>
+    <Navigation.Selected />
+    <Navigation.Disclosure />
+  </Navigation.Panel>
+</Navigation>
 
